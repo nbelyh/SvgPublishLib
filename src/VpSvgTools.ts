@@ -4,38 +4,40 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { IDiagram } from './interfaces/IDiagram';
+
 export class VpSvgTools {
 
-  private viewPort = null;
-  public diagram = null;
+  private viewPort: SVGGElement = null;
+  public diagram: IDiagram = null;
 
   private viewBox = '';
-  public elem: HTMLElement = null;
-  public svg = null;
+  public container: HTMLElement = null;
+  public svg: SVGSVGElement = null;
 
   private enableZoom = 1; // 1 or 0: enable or disable zooming (default enabled)
   private zoomScale = 0.5; // Zoom sensitivity
   private panDelta = 3; // start pan on move
 
-  private state = null;
-  private stateOriginSvg = null;
-  private stateOriginClient = null;
-  private stateTf = null;
-  private stateDiff = null;
+  private state: 'pinch' | 'pan' | 'down' = null;
+  private stateOriginSvg: DOMPoint = null;
+  private stateOriginClient: { pageX: number, pageY: number } = null;
+  private stateTf: DOMMatrix = null;
+  private stateDiff: number = null;
 
   private onViewChanged = null;
 
-  constructor(elem, diagram) {
-    this.elem = elem;
+  constructor(container: HTMLElement, svg: SVGSVGElement, diagram: IDiagram) {
+    this.container = container;
+    this.svg = svg;
     this.diagram = diagram;
 
-    this.svg = elem.querySelector("svg");
-    this.viewPort = elem.querySelector("svg > g");
+    this.viewPort = container.querySelector("svg > g");
     this.viewBox = diagram.viewBox;
 
     this.initCTM();
 
-    this.subscribe(elem);
+    this.subscribe(container);
   }
 
   private subscribe(elem) {
@@ -87,8 +89,8 @@ export class VpSvgTools {
     const width = parseFloat(bbox[2]);
     const height = parseFloat(bbox[3]);
 
-    const maxWidth = this.elem.offsetWidth;
-    const maxHeight = this.elem.offsetHeight;
+    const maxWidth = this.container.offsetWidth;
+    const maxHeight = this.container.offsetHeight;
 
     if (typeof this.svg.createSVGMatrix !== 'function')
       return;
@@ -178,7 +180,7 @@ export class VpSvgTools {
 
     const p = this.svg.createSVGPoint();
 
-    const box = this.elem.getBoundingClientRect();
+    const box = this.container.getBoundingClientRect();
     p.x = clientPoint.pageX - box.left;
     p.y = clientPoint.pageY - box.top;
 
@@ -193,7 +195,7 @@ export class VpSvgTools {
 
     const p = this.svg.createSVGPoint();
 
-    const box = this.elem.getBoundingClientRect();
+    const box = this.container.getBoundingClientRect();
     p.x = (box.right - box.left) / 2;
     p.y = (box.bottom - box.top) / 2;
 
@@ -223,7 +225,7 @@ export class VpSvgTools {
     }
 
     if (this.onViewChanged)
-      this.onViewChanged(this.elem);
+      this.onViewChanged(this.container);
   }
 
   /*

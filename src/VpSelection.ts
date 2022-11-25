@@ -4,17 +4,22 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-const SVGNS = 'http://www.w3.org/2000/svg';
+import { IDiagram } from './interfaces/IDiagram';
+import { SelectionChangedEvent } from './interfaces/SelectionChangedEvent';
+import { SvgFilterService } from './SvgFilterService';
 
 export class VpSelection {
 
-  private svg: SVGElement;
-  private diagram: any;
+  private svg: SVGSVGElement;
+  private diagram: IDiagram;
 
-  constructor(svg: SVGElement, diagram) {
+  constructor(svg: SVGSVGElement, diagram: IDiagram) {
 
     this.svg = svg;
     this.diagram = diagram;
+    this.diagram.events = new EventTarget();
+
+    SvgFilterService.createFilterDefs(svg, diagram.selectionView);
 
     if (diagram.shapes && diagram.enableSelection) {
       this.svg.addEventListener('click', () => {
@@ -92,7 +97,7 @@ export class VpSelection {
     if (!this.diagram.selectedShapeId || this.diagram.selectedShapeId !== shapeId) {
 
       this.diagram.selectedShapeId = shapeId;
-      this.diagram.selectionChanged.fire(shapeId);
+      this.diagram.events.dispatchEvent(new SelectionChangedEvent(shapeId));
 
       const shapeToSelect = this.findTargetShape(shapeId);
       if (shapeToSelect) {
@@ -101,30 +106,7 @@ export class VpSelection {
           this.deselectBox();
 
           const rect = shapeToSelect.getBBox();
-          let x = rect.x;
-          let y = rect.y;
-          let width = rect.width;
-          let height = rect.height;
-          const dilate = +this.diagram.selectionView?.dilate || 4;
-
-          if (this.diagram.enableDilate) {
-            x -= dilate / 2;
-            width += dilate;
-            y -= dilate / 2;
-            height += dilate;
-          }
-
-          const selectColor = this.diagram.selectionView?.selectColor || "rgba(255, 255, 0, 0.4)";
-
-          const box = document.createElementNS(SVGNS, "rect");
-          box.id = "vp-selection-box";
-          box.setAttribute("x", x);
-          box.setAttribute("y", y);
-          box.setAttribute("width", width);
-          box.setAttribute("height", height);
-          box.style.fill = (this.diagram.selectionView?.mode === 'normal') ? 'none' : selectColor;
-          box.style.stroke = selectColor;
-          box.style.strokeWidth = `${dilate || 0}px`;
+          const box = SvgFilterService.createSelectionBox(rect, this.diagram.selectionView);
           shapeToSelect.appendChild(box);
         } else {
           shapeToSelect.setAttribute('filter', 'url(#select)');
