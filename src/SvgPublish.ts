@@ -5,15 +5,16 @@
 //-----------------------------------------------------------------------
 
 import { IDiagram } from './interfaces/IDiagram';
+import { utils } from './utils';
 
-export class VpSvgTools {
+export class SvgPublish {
 
-  private viewPort: SVGGElement = null;
   public diagram: IDiagram = null;
-
-  private viewBox = '';
   public container: HTMLElement = null;
   public svg: SVGSVGElement = null;
+
+  private viewPort: SVGGElement = null;
+  private viewBox = '';
 
   private enableZoom = 1; // 1 or 0: enable or disable zooming (default enabled)
   private zoomScale = 0.5; // Zoom sensitivity
@@ -37,46 +38,37 @@ export class VpSvgTools {
 
     this.initCTM();
 
-    this.subscribe(container);
+    this.subscribe();
   }
 
-  private subscribe(elem) {
-    elem.addEventListener("mousedown", this.handleMouseDown);
-    elem.addEventListener("mouseup", this.handleMouseUp)
-    elem.addEventListener("mousemove", this.handleMouseMove);
-    elem.addEventListener("touchstart", this.handleTouchStart);
-    elem.addEventListener("touchmove", this.handleMouseMove);
+  private subscribe() {
+    this.container.addEventListener("mousedown", this.handleMouseDown);
+    this.container.addEventListener("mouseup", this.handleMouseUp)
+    this.container.addEventListener("mousemove", this.handleMouseMove);
+    this.container.addEventListener("touchstart", this.handleTouchStart);
+    this.container.addEventListener("touchmove", this.handleMouseMove);
 
     this.svg.addEventListener('click', this.handleClick, true);
 
     if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0)
-      elem.addEventListener('DOMMouseScroll', this.handleMouseWheel); // Firefox
+      this.container.addEventListener('DOMMouseScroll', this.handleMouseWheel); // Firefox
     else
-      elem.addEventListener('mousewheel', this.handleMouseWheel); // Chrome/Safari/Opera/IE
+      this.container.addEventListener('mousewheel', this.handleMouseWheel); // Chrome/Safari/Opera/IE
   }
 
   private unsubscribe() {
-    // this.elem.removeEventListener('mousedown', )
-  }
+    this.container.removeEventListener("mousedown", this.handleMouseDown);
+    this.container.removeEventListener("mouseup", this.handleMouseUp)
+    this.container.removeEventListener("mousemove", this.handleMouseMove);
+    this.container.removeEventListener("touchstart", this.handleTouchStart);
+    this.container.removeEventListener("touchmove", this.handleMouseMove);
 
-  private fitInBox(width, height, maxWidth, maxHeight) {
+    this.svg.removeEventListener('click', this.handleClick, true);
 
-    const aspect = width / height;
-
-    if (width > maxWidth || height < maxHeight) {
-      width = maxWidth;
-      height = Math.floor(width / aspect);
-    }
-
-    if (height > maxHeight || width < maxWidth) {
-      height = maxHeight;
-      width = Math.floor(height * aspect);
-    }
-
-    return {
-      width: width,
-      height: height
-    };
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0)
+      this.container.removeEventListener('DOMMouseScroll', this.handleMouseWheel); // Firefox
+    else
+      this.container.removeEventListener('mousewheel', this.handleMouseWheel); // Chrome/Safari/Opera/IE
   }
 
   private initCTM() {
@@ -97,7 +89,7 @@ export class VpSvgTools {
 
     let m = this.svg.createSVGMatrix();
 
-    const sz = this.fitInBox(width, height, maxWidth, maxHeight);
+    const sz = utils.fitInBox(width, height, maxWidth, maxHeight);
 
     if (sz.width < maxWidth)
       m = m.translate((maxWidth - sz.width) / 2, 0);

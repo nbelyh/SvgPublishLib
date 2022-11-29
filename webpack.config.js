@@ -24,4 +24,7 @@ module.exports = {
       type: 'umd'
     }
   },
+  watchOptions: {
+    ignored: /node_modules/
+  }
 };

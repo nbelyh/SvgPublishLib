@@ -1,2 +1,2 @@
-export * from './VpSvgTools';
+export * from './SvgPublish';
 export * from './VpSelection';

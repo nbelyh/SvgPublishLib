@@ -4,31 +4,29 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IDiagram } from './interfaces/IDiagram';
 import { SelectionChangedEvent } from './interfaces/SelectionChangedEvent';
 import { SvgFilterService } from './SvgFilterService';
+import { SvgPublish } from './SvgPublish';
 
 export class VpSelection {
 
-  private svg: SVGSVGElement;
-  private diagram: IDiagram;
+  private component: SvgPublish;
+  constructor(component: SvgPublish) {
 
-  constructor(svg: SVGSVGElement, diagram: IDiagram) {
+    this.component = component;
 
-    this.svg = svg;
-    this.diagram = diagram;
-    this.diagram.events = new EventTarget();
+    const diagram = this.component.diagram;
+    const svg = this.component.svg;
 
     SvgFilterService.createFilterDefs(svg, diagram.selectionView);
 
     if (diagram.shapes && diagram.enableSelection) {
-      this.svg.addEventListener('click', () => {
-        this.setSelection(null);
-      });
 
-      for (const shapeId in this.diagram.shapes) {
+      svg.addEventListener('click', () => this.setSelection(null));
 
-        const info = this.diagram.shapes[shapeId];
+      for (const shapeId in diagram.shapes) {
+
+        const info = diagram.shapes[shapeId];
         if (info.DefaultLink
           || info.Props && Object.keys(info.Props).length
           || info.Links && info.Links.length
@@ -49,11 +47,15 @@ export class VpSelection {
     }
   }
 
+  public unsubscribe() {
+
+  }
+
   //TODO: consolidate when migrating from jQuery
   private findTargetShape(shapeId: string): any {
     const shape = document.getElementById(shapeId);
 
-    const info = this.diagram.shapes[shapeId];
+    const info = this.component.diagram.shapes[shapeId];
     if (!info || !info.IsContainer)
       return shape;
 
@@ -80,33 +82,35 @@ export class VpSelection {
 
   public setSelection(shapeId: string) {
 
-    if (this.diagram.selectedShapeId && this.diagram.selectedShapeId !== shapeId) {
+    const diagram = this.component.diagram;
 
-      const selectedShape = this.findTargetShape(this.diagram.selectedShapeId);
+    if (diagram.selectedShapeId && diagram.selectedShapeId !== shapeId) {
+
+      const selectedShape = this.findTargetShape(diagram.selectedShapeId);
       if (selectedShape) {
-        if (this.diagram.selectionView && this.diagram.selectionView.enableBoxSelection) {
+        if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
           this.deselectBox();
         } else {
           selectedShape.removeAttribute('filter');
         }
       }
 
-      delete this.diagram.selectedShapeId;
+      delete diagram.selectedShapeId;
     }
 
-    if (!this.diagram.selectedShapeId || this.diagram.selectedShapeId !== shapeId) {
+    if (!diagram.selectedShapeId || diagram.selectedShapeId !== shapeId) {
 
-      this.diagram.selectedShapeId = shapeId;
-      this.diagram.events.dispatchEvent(new SelectionChangedEvent(shapeId));
+      diagram.selectedShapeId = shapeId;
+      // diagram.events.dispatchEvent(new SelectionChangedEvent(shapeId));
 
       const shapeToSelect = this.findTargetShape(shapeId);
       if (shapeToSelect) {
-        if (this.diagram.selectionView && this.diagram.selectionView.enableBoxSelection) {
+        if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
 
           this.deselectBox();
 
           const rect = shapeToSelect.getBBox();
-          const box = SvgFilterService.createSelectionBox(rect, this.diagram.selectionView);
+          const box = SvgFilterService.createSelectionBox(rect, diagram.selectionView);
           shapeToSelect.appendChild(box);
         } else {
           shapeToSelect.setAttribute('filter', 'url(#select)');
@@ -115,8 +119,8 @@ export class VpSelection {
     }
   }
 
-  public highlightShape(shapeId) {
-    this.svg.ownerDocument.getElementById(shapeId).animate([
+  public highlightShape(shapeId: string) {
+    this.component.svg.ownerDocument.getElementById(shapeId).animate([
       { opacity: 1, easing: 'ease-out' },
       { opacity: 0.1, easing: 'ease-in' },
       { opacity: 0 }],
