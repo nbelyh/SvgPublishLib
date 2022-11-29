@@ -1,13 +1,16 @@
 
 import { ILayerViewOptions } from './ILayerViewOptions';
+import { IPage } from './IPage';
 import { ISelectionViewOptions } from './ISelectionViewOptions';
+import { IShape } from './IShape';
 
 export interface IDiagram {
 
   svg: SVGSVGElement;
   viewBox: string;
 
-  shapes: any[];
+  shapes: IShape[];
+  pages: IPage[];
   selectedShapeId: string;
   events: EventTarget;
 
@@ -25,6 +28,7 @@ export interface IDiagram {
 
   enableProps: boolean;
   enableLinks: boolean;
+  enableFollowHyperlinks: boolean;
   enableSelection: boolean;
   enableLayers: boolean;
   enableTooltips: boolean;

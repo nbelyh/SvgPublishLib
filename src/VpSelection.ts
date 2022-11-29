@@ -32,7 +32,7 @@ export class VpSelection {
           || info.Links && info.Links.length
           || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
         ) {
-          const shape = this.findTargetShape(shapeId);
+          const shape = this.component.findTargetShape(shapeId);
           if (!shape)
             return;
 
@@ -49,24 +49,6 @@ export class VpSelection {
 
   public unsubscribe() {
 
-  }
-
-  //TODO: consolidate when migrating from jQuery
-  private findTargetShape(shapeId: string): any {
-    const shape = document.getElementById(shapeId);
-
-    const info = this.component.diagram.shapes[shapeId];
-    if (!info || !info.IsContainer)
-      return shape;
-
-    if (!info.ContainerText)
-      return null;
-
-    for (let i = 0; i < shape.children.length; ++i) {
-      const child = shape.children[i];
-      if (child.textContent.indexOf(info.ContainerText) >= 0)
-        return child;
-    }
   }
 
   private deselectBox() {
@@ -86,7 +68,7 @@ export class VpSelection {
 
     if (diagram.selectedShapeId && diagram.selectedShapeId !== shapeId) {
 
-      const selectedShape = this.findTargetShape(diagram.selectedShapeId);
+      const selectedShape = this.component.findTargetShape(diagram.selectedShapeId);
       if (selectedShape) {
         if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
           this.deselectBox();
@@ -101,9 +83,9 @@ export class VpSelection {
     if (!diagram.selectedShapeId || diagram.selectedShapeId !== shapeId) {
 
       diagram.selectedShapeId = shapeId;
-      // diagram.events.dispatchEvent(new SelectionChangedEvent(shapeId));
+      diagram.events.dispatchEvent(new SelectionChangedEvent({ shapeId }));
 
-      const shapeToSelect = this.findTargetShape(shapeId);
+      const shapeToSelect = this.component.findTargetShape(shapeId);
       if (shapeToSelect) {
         if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
 

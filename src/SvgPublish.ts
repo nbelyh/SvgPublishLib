@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------
 
 import { IDiagram } from './interfaces/IDiagram';
-import { utils } from './utils';
 
 export class SvgPublish {
 
@@ -35,6 +34,8 @@ export class SvgPublish {
 
     this.viewPort = container.querySelector("svg > g");
     this.viewBox = diagram.viewBox;
+
+    this.diagram.events = new EventTarget();
 
     this.initCTM();
 
@@ -89,7 +90,7 @@ export class SvgPublish {
 
     let m = this.svg.createSVGMatrix();
 
-    const sz = utils.fitInBox(width, height, maxWidth, maxHeight);
+    const sz = SvgPublish.fitInBox(width, height, maxWidth, maxHeight);
 
     if (sz.width < maxWidth)
       m = m.translate((maxWidth - sz.width) / 2, 0);
@@ -121,6 +122,26 @@ export class SvgPublish {
     if (startZoom) {
       this.zoom(startZoom);
     }
+  }
+
+  static fitInBox(width: number, height: number, maxWidth: number, maxHeight: number) {
+
+    const aspect = width / height;
+  
+    if (width > maxWidth || height < maxHeight) {
+      width = maxWidth;
+      height = Math.floor(width / aspect);
+    }
+  
+    if (height > maxHeight || width < maxWidth) {
+      height = maxHeight;
+      width = Math.floor(height * aspect);
+    }
+  
+    return {
+      width: width,
+      height: height
+    };
   }
 
   private setStartShape(shapeId) {
@@ -403,5 +424,22 @@ export class SvgPublish {
     }
 
     this.state = null;
+  }
+
+  public findTargetShape(shapeId: string): any {
+    const shape = document.getElementById(shapeId);
+
+    const info = this.diagram.shapes[shapeId];
+    if (!info || !info.IsContainer)
+      return shape;
+
+    if (!info.ContainerText)
+      return null;
+
+    for (let i = 0; i < shape.children.length; ++i) {
+      const child = shape.children[i];
+      if (child.textContent.indexOf(info.ContainerText) >= 0)
+        return child;
+    }
   }
 }

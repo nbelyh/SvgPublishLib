@@ -1,7 +1,11 @@
+export interface ISelectionChangedEventArgs {
+  shapeId: string;
+}
+
 export class SelectionChangedEvent extends Event {
-  selectedShapeId: string;
-  constructor(selectedShapeId: string) {
+  args: ISelectionChangedEventArgs;
+  constructor(args: ISelectionChangedEventArgs) {
     super('selectionChanged');
-    this.selectedShapeId = selectedShapeId;
+    this.args = args;
   }
 }
