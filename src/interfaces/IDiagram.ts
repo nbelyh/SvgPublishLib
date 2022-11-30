@@ -1,4 +1,9 @@
 
+//-----------------------------------------------------------------------
+// Copyright (c) 2017-2022 Nikolay Belykh unmanagedvisio.com All rights reserved.
+// Nikolay Belykh, nbelyh@gmail.com
+//-----------------------------------------------------------------------
+
 import { ISelectionViewOptions } from './ISelectionViewOptions';
 import { ILayerViewOptions } from './ILayerViewOptions';
 import { IShape } from './IShape';
