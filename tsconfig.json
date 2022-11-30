@@ -19,12 +19,14 @@
     "lib": [
       "dom",
       "ES2015"
-    ]
+    ],
+    "baseUrl": "./src"
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx", 
-    "index.ts", "src/SvgPublish.js",
+    "src/**/*.tsx",
+    "index.ts",
+    "src/SvgPublish.js",
   ],
   "exclude": [
     "node_modules",

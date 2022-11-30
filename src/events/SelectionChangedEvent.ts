@@ -5,7 +5,7 @@ export interface ISelectionChangedEventArgs {
 export class SelectionChangedEvent extends Event {
   args: ISelectionChangedEventArgs;
   constructor(args: ISelectionChangedEventArgs) {
-    super('selectionChanged');
+    super('selectionChanged', { cancelable: true });
     this.args = args;
   }
 }

@@ -4,16 +4,17 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IDiagram } from './interfaces/IDiagram';
+import { ViewChangedEvent } from 'events/ViewChangedEvent';
+import { IContext } from "interfaces/IContext";
+import { BaseFeature } from 'services/BaseFeature';
+import { Geometry } from 'services/Geometry';
+import { Hover } from 'services/Hover';
+import { Links } from 'services/Links';
+import { Selection } from 'services/Selection';
 
-export class SvgPublish {
-
-  public diagram: IDiagram = null;
-  public container: HTMLElement = null;
-  public svg: SVGSVGElement = null;
+export class SvgPublish extends BaseFeature {
 
   private viewPort: SVGGElement = null;
-  private viewBox = '';
 
   private enableZoom = 1; // 1 or 0: enable or disable zooming (default enabled)
   private zoomScale = 0.5; // Zoom sensitivity
@@ -25,72 +26,86 @@ export class SvgPublish {
   private stateTf: DOMMatrix = null;
   private stateDiff: number = null;
 
-  private onViewChanged = null;
+  private selection: Selection;
+  private links: Links;
+  private hover: Hover;
 
-  constructor(container: HTMLElement, svg: SVGSVGElement, diagram: IDiagram) {
-    this.container = container;
-    this.svg = svg;
-    this.diagram = diagram;
+  constructor(context: IContext, viewBox: string) {
+    super(context);
 
-    this.viewPort = container.querySelector("svg > g");
-    this.viewBox = diagram.viewBox;
+    this.viewPort = context.container.querySelector("svg > g");
 
-    this.diagram.events = new EventTarget();
+    this.initCTM(viewBox);
 
-    this.initCTM();
+    if (context.diagram.enableSelection) {
+      this.selection = new Selection(context);
+    }
 
-    this.subscribe();
+    if (context.diagram.enableLinks) {
+      this.links = new Links(context);
+    }
+
+    if (context.diagram.enableHover) {
+      this.hover = new Hover(context);
+    }
+
+    this.subscribeAll();
   }
 
-  private subscribe() {
-    this.container.addEventListener("mousedown", this.handleMouseDown);
-    this.container.addEventListener("mouseup", this.handleMouseUp)
-    this.container.addEventListener("mousemove", this.handleMouseMove);
-    this.container.addEventListener("touchstart", this.handleTouchStart);
-    this.container.addEventListener("touchmove", this.handleMouseMove);
+  private subscribeAll() {
+    const container = this.context.container;
+    const svg = this.context.svg;
 
-    this.svg.addEventListener('click', this.handleClick, true);
+    this.subscribe(container, "mousedown", this.handleMouseDown);
+    this.subscribe(container, "mouseup", this.handleMouseUp);
+    this.subscribe(container, "mousemove", this.handleMouseMove);
+    this.subscribe(container, "touchstart", this.handleTouchStart);
+    this.subscribe(container, "touchmove", this.handleMouseMove);
 
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0)
-      this.container.addEventListener('DOMMouseScroll', this.handleMouseWheel); // Firefox
-    else
-      this.container.addEventListener('mousewheel', this.handleMouseWheel); // Chrome/Safari/Opera/IE
+    this.subscribe(svg, 'click', this.handleClick, true);
+
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0) { // Firefox
+      this.subscribe(container, 'DOMMouseScroll', this.handleMouseWheel);
+    } else { // Chrome/Safari/Opera/IE
+      this.subscribe(container, 'mousewheel', this.handleMouseWheel);
+    }
   }
 
-  private unsubscribe() {
-    this.container.removeEventListener("mousedown", this.handleMouseDown);
-    this.container.removeEventListener("mouseup", this.handleMouseUp)
-    this.container.removeEventListener("mousemove", this.handleMouseMove);
-    this.container.removeEventListener("touchstart", this.handleTouchStart);
-    this.container.removeEventListener("touchmove", this.handleMouseMove);
+  public destroy() {
+    if (this.links) {
+      this.links.destroy();
+      this.links = null;
+    }
 
-    this.svg.removeEventListener('click', this.handleClick, true);
+    if (this.selection) {
+      this.selection.destroy();
+      this.selection = null;
+    }
 
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0)
-      this.container.removeEventListener('DOMMouseScroll', this.handleMouseWheel); // Firefox
-    else
-      this.container.removeEventListener('mousewheel', this.handleMouseWheel); // Chrome/Safari/Opera/IE
+    if (this.hover) {
+      this.hover.destroy();
+      this.hover = null;
+    }
+
+    super.destroy();
   }
 
-  private initCTM() {
+  private initCTM(viewBox: string) {
 
-    if (!this.viewBox)
-      return;
-
-    const bbox = this.viewBox.split(' ');
+    const bbox = viewBox.split(' ');
 
     const width = parseFloat(bbox[2]);
     const height = parseFloat(bbox[3]);
 
-    const maxWidth = this.container.offsetWidth;
-    const maxHeight = this.container.offsetHeight;
+    const container = this.context.container;
+    const svg = this.context.svg;
 
-    if (typeof this.svg.createSVGMatrix !== 'function')
-      return;
+    const maxWidth = container.offsetWidth;
+    const maxHeight = container.offsetHeight;
 
-    let m = this.svg.createSVGMatrix();
+    let m = svg.createSVGMatrix();
 
-    const sz = SvgPublish.fitInBox(width, height, maxWidth, maxHeight);
+    const sz = Geometry.fitInBox(width, height, maxWidth, maxHeight);
 
     if (sz.width < maxWidth)
       m = m.translate((maxWidth - sz.width) / 2, 0);
@@ -124,26 +139,6 @@ export class SvgPublish {
     }
   }
 
-  static fitInBox(width: number, height: number, maxWidth: number, maxHeight: number) {
-
-    const aspect = width / height;
-  
-    if (width > maxWidth || height < maxHeight) {
-      width = maxWidth;
-      height = Math.floor(width / aspect);
-    }
-  
-    if (height > maxHeight || width < maxWidth) {
-      height = maxHeight;
-      width = Math.floor(height * aspect);
-    }
-  
-    return {
-      width: width,
-      height: height
-    };
-  }
-
   private setStartShape(shapeId) {
     const p2 = this.getDefaultPoint();
     const p1 = this.getShapePoint(shapeId);
@@ -157,12 +152,12 @@ export class SvgPublish {
   }
 
   private getShapePoint(shapeId) {
-    const shapeElem = this.svg.getElementById(shapeId);
+    const shapeElem = this.context.svg.getElementById(shapeId);
     if (!shapeElem)
       return undefined;
 
     const rect = shapeElem.getBoundingClientRect();
-    const pt = this.svg.createSVGPoint();
+    const pt = this.context.svg.createSVGPoint();
     pt.x = (rect.left + rect.right) / 2;
     pt.y = (rect.top + rect.bottom) / 2;
     return pt;
@@ -174,15 +169,15 @@ export class SvgPublish {
 
     if (touches && touches.length === 2) {
 
-      const pt1 = this.makeClientPoint(touches[0].pageX, touches[0].pageY);
-      const pt2 = this.makeClientPoint(touches[1].pageX, touches[1].pageY);
+      const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
+      const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
 
-      return this.makeClientPoint((pt1.pageX + pt2.pageX) / 2, (pt1.pageY + pt2.pageY) / 2);
+      return Geometry.makeClientPoint((pt1.pageX + pt2.pageX) / 2, (pt1.pageY + pt2.pageY) / 2);
 
     } else if (touches && touches.length === 1) {
-      return this.makeClientPoint(touches[0].pageX, touches[0].pageY);
+      return Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
     } else {
-      return this.makeClientPoint(evt.pageX, evt.pageY);
+      return Geometry.makeClientPoint(evt.pageX, evt.pageY);
     }
   }
 
@@ -191,9 +186,9 @@ export class SvgPublish {
   */
   private getSvgClientPoint(clientPoint) {
 
-    const p = this.svg.createSVGPoint();
+    const p = this.context.svg.createSVGPoint();
 
-    const box = this.container.getBoundingClientRect();
+    const box = this.context.container.getBoundingClientRect();
     p.x = clientPoint.pageX - box.left;
     p.y = clientPoint.pageY - box.top;
 
@@ -206,9 +201,9 @@ export class SvgPublish {
 
   private getDefaultPoint() {
 
-    const p = this.svg.createSVGPoint();
+    const p = this.context.svg.createSVGPoint();
 
-    const box = this.container.getBoundingClientRect();
+    const box = this.context.container.getBoundingClientRect();
     p.x = (box.right - box.left) / 2;
     p.y = (box.bottom - box.top) / 2;
 
@@ -226,19 +221,18 @@ export class SvgPublish {
     element.setAttribute("transform", s);
 
     // BUG with SVG arrow rendering in complex files in IE10, IE11
-    if (navigator.userAgent.match(/trident|edge/i)) {
+    // if (navigator.userAgent.match(/trident|edge/i)) {
 
-      if (typeof this.svg.style.strokeMiterlimit !== 'undefined') {
+    //   if (typeof this.svg.style.strokeMiterlimit !== 'undefined') {
 
-        if (this.svg.style.strokeMiterlimit !== "3")
-          this.svg.style.strokeMiterlimit = "3";
-        else
-          this.svg.style.strokeMiterlimit = "2";
-      }
-    }
+    //     if (this.svg.style.strokeMiterlimit !== "3")
+    //       this.svg.style.strokeMiterlimit = "3";
+    //     else
+    //       this.svg.style.strokeMiterlimit = "2";
+    //   }
+    // }
 
-    if (this.onViewChanged)
-      this.onViewChanged(this.container);
+    this.context.events.dispatchEvent(new ViewChangedEvent({}));
   }
 
   /*
@@ -250,9 +244,9 @@ export class SvgPublish {
     if (!this.enableZoom)
       return;
 
-    if (this.diagram.enableZoomCtrl && !evt.ctrlKey)
+    if (this.context.diagram.enableZoomCtrl && !evt.ctrlKey)
       return;
-    if (this.diagram.enableZoomShift && !evt.shiftKey)
+    if (this.context.diagram.enableZoomShift && !evt.shiftKey)
       return;
 
     if (evt.preventDefault)
@@ -282,7 +276,7 @@ export class SvgPublish {
     const p = evtPt.matrixTransform(this.viewPort.getCTM().inverse());
 
     // Compute new scale matrix in current mouse position
-    const k = this.svg.createSVGMatrix().translate(p.x, p.y).scale(z).translate(-p.x, -p.y);
+    const k = this.context.svg.createSVGMatrix().translate(p.x, p.y).scale(z).translate(-p.x, -p.y);
 
     this.setCTM(this.viewPort, this.viewPort.getCTM().multiply(k));
 
@@ -290,24 +284,6 @@ export class SvgPublish {
       this.stateTf = this.viewPort.getCTM().inverse();
 
     this.stateTf = this.stateTf.multiply(k.inverse());
-  }
-
-  /*
-
-  */
-
-  private makeClientPoint(pageX, pageY) {
-    return { pageX: pageX, pageY: pageY };
-  }
-
-  /*
-      compute geometric distance between points
-  */
-
-  private diff(pt1, pt2) {
-    const dx = pt1.pageX - pt2.pageX;
-    const dy = pt1.pageY - pt2.pageY;
-    return Math.sqrt(dx * dx + dy * dy);
   }
 
   /*
@@ -331,10 +307,10 @@ export class SvgPublish {
       const touches = evt.touches;
       if (touches && touches.length === 2) {
 
-        const pt1 = this.makeClientPoint(touches[0].pageX, touches[0].pageY);
-        const pt2 = this.makeClientPoint(touches[1].pageX, touches[1].pageY);
+        const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
+        const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
 
-        const currentDiff = this.diff(pt1, pt2);
+        const currentDiff = Geometry.diff(pt1, pt2);
 
         this.zoom(currentDiff / this.stateDiff, evt);
 
@@ -347,7 +323,7 @@ export class SvgPublish {
 
     if (this.state === 'down') {
 
-      if (this.diff(clientPt, this.stateOriginClient) > this.panDelta)
+      if (Geometry.diff(clientPt, this.stateOriginClient) > this.panDelta)
         this.state = 'pan';
     }
 
@@ -373,22 +349,22 @@ export class SvgPublish {
     return this.handleTouchStart(evt);
   }
 
-  private handleTouchStart = (evt) => {
+  private handleTouchStart = (evt: TouchEvent) => {
 
     const touches = evt.touches;
 
     if (touches && touches.length === 2) {
 
-      const pt1 = this.makeClientPoint(touches[0].pageX, touches[0].pageY);
-      const pt2 = this.makeClientPoint(touches[1].pageX, touches[1].pageY);
+      const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
+      const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
 
-      this.stateDiff = this.diff(pt1, pt2);
+      this.stateDiff = Geometry.diff(pt1, pt2);
 
       this.state = 'pinch';
 
     } else {
 
-      if (this.diagram.twoFingersTouch && touches) {
+      if (this.context.diagram.twoFingersTouch && touches) {
         this.state = null;
         return;
       }
@@ -405,7 +381,7 @@ export class SvgPublish {
       reset state on mouse up
   */
 
-  private handleMouseUp = (evt) => {
+  private handleMouseUp = (evt: MouseEvent) => {
     if (this.state === 'pan' || this.state === 'pinch') {
       if (evt.stopPropagation) {
         evt.stopPropagation();
@@ -414,7 +390,7 @@ export class SvgPublish {
     this.state = null;
   }
 
-  private handleClick = (evt) => {
+  private handleClick = (evt: MouseEvent) => {
 
     // prevent firing 'click' event in case we pan or zoom
     if (this.state === 'pan' || this.state === 'pinch') {
@@ -424,22 +400,5 @@ export class SvgPublish {
     }
 
     this.state = null;
-  }
-
-  public findTargetShape(shapeId: string): any {
-    const shape = document.getElementById(shapeId);
-
-    const info = this.diagram.shapes[shapeId];
-    if (!info || !info.IsContainer)
-      return shape;
-
-    if (!info.ContainerText)
-      return null;
-
-    for (let i = 0; i < shape.children.length; ++i) {
-      const child = shape.children[i];
-      if (child.textContent.indexOf(info.ContainerText) >= 0)
-        return child;
-    }
   }
 }

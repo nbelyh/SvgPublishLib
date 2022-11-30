@@ -1,8 +1,8 @@
-import { ISelectionViewOptions } from "./interfaces/ISelectionViewOptions";
+import { ISelectionViewOptions } from 'interfaces/ISelectionViewOptions';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-export class SvgFilterService {
+export class SvgFilters {
 
   private static colorToRGBA(input: string) {
 
@@ -25,7 +25,7 @@ export class SvgFilterService {
         a: 1
       }
     }
-    
+
     var matchHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(input);
     if (matchHex) {
       return {
@@ -38,12 +38,13 @@ export class SvgFilterService {
     return null;
   }
 
-  public static createSelectionBox(rect, options: ISelectionViewOptions) {
+  public static createSelectionBox(id: string, rect, options: { dilate: number; enableDilate: boolean; color: string, mode: string }) {
+
     let x = rect.x;
     let y = rect.y;
     let width = rect.width;
     let height = rect.height;
-    const dilate = +options.dilate || 4;
+    const dilate = options.dilate || 4;
 
     if (options?.enableDilate) {
       x -= dilate / 2;
@@ -52,39 +53,47 @@ export class SvgFilterService {
       height += dilate;
     }
 
-    const selectColor = options?.selectColor || "rgba(255, 255, 0, 0.4)";
-
     const box = document.createElementNS(SVGNS, "rect");
-    box.id = "vp-selection-box";
+    box.id = id;
     box.setAttribute("x", x);
     box.setAttribute("y", y);
     box.setAttribute("width", width);
     box.setAttribute("height", height);
-    box.style.fill = (options?.mode === 'normal') ? 'none' : selectColor;
-    box.style.stroke = selectColor;
+    box.setAttribute("pointer-events", "none");
+    box.style.fill = (options.mode === 'normal') ? 'none' : options.color;
+    box.style.stroke = options.color;
     box.style.strokeWidth = `${dilate || 0}px`;
+
+    return box;
   }
 
-  public static createFilterDefs(svg: SVGSVGElement, options: ISelectionViewOptions) {
+  public static createFilterDefs(selectionView: ISelectionViewOptions) {
     const defsNode = document.createElementNS(SVGNS, "defs");
-    defsNode.appendChild(this.createFilterNode("hover", options.hoverColor, options));
-    defsNode.appendChild(this.createFilterNode("select", options.selectColor, options));
-    defsNode.appendChild(this.createFilterNode("hyperlink", options.hyperlinkColor, options));
-    svg.appendChild(defsNode);
+    const options = {
+      dilate: selectionView.dilate,
+      enableDilate: selectionView.enableDilate,
+      blur: selectionView.blur,
+      enableBlur: selectionView.enableBlur,
+      mode: selectionView.mode
+    };
+    defsNode.appendChild(this.createFilterNode("hover", { ...options, color: selectionView.hoverColor }));
+    defsNode.appendChild(this.createFilterNode("select", { ...options, color: selectionView.selectColor }));
+    defsNode.appendChild(this.createFilterNode("hyperlink", { ...options, color: selectionView.hyperlinkColor }));
+    return defsNode;
   }
 
-  public static createFilterNode(id: string, color: string, options?: ISelectionViewOptions) {
+  public static createFilterNode(id: string, options: { dilate: number; enableDilate: boolean; blur: number; enableBlur: boolean; color: string, mode: string }) {
     const filterNode = document.createElementNS(SVGNS, "filter");
     filterNode.setAttribute('id', id);
 
-    if (options?.enableDilate) {
+    if (options.enableDilate) {
       const feMorphology = document.createElementNS(SVGNS, "feMorphology");
       feMorphology.setAttribute("operator", "dilate");
       feMorphology.setAttribute("radius", '' + options.dilate);
       filterNode.appendChild(feMorphology);
     }
 
-    if (options?.enableBlur) {
+    if (options.enableBlur) {
       const feGaussianBlur = document.createElementNS(SVGNS, "feGaussianBlur");
       feGaussianBlur.setAttribute("stdDeviation", '' + options.blur);
       filterNode.appendChild(feGaussianBlur);
@@ -93,7 +102,7 @@ export class SvgFilterService {
     const feColorMatrixNode = document.createElementNS(SVGNS, "feColorMatrix");
     feColorMatrixNode.setAttribute('type', 'matrix');
 
-    const c = SvgFilterService.colorToRGBA(color);
+    const c = SvgFilters.colorToRGBA(options.color);
     feColorMatrixNode.setAttribute('values', `
       ${c.r} ${c.r} ${c.r} ${c.r} ${c.r}
       ${c.g} ${c.g} ${c.g} ${c.g} ${c.g}

@@ -1,10 +1,11 @@
-import { IShape } from './IShape';
+import { IShape } from '../interfaces/IShape';
 
 interface ILinkClickedEventArgs {
   evt: PointerEvent;
   shape: IShape;
   link: string;
   href: string;
+  target: string;
 }
 
 export class LinkClickedEvent extends Event {
@@ -13,7 +14,7 @@ export class LinkClickedEvent extends Event {
   args: ILinkClickedEventArgs;
 
   constructor(elt: SVGElement, args: ILinkClickedEventArgs) {
-    super('linkClicked');
+    super('linkClicked', { cancelable: true });
     this.elt = elt;
     this.args = args;
   }

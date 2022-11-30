@@ -1,18 +1,13 @@
 
-import { ILayerViewOptions } from './ILayerViewOptions';
-import { IPage } from './IPage';
 import { ISelectionViewOptions } from './ISelectionViewOptions';
+import { ILayerViewOptions } from './ILayerViewOptions';
 import { IShape } from './IShape';
+import { IPage } from './IPage';
 
 export interface IDiagram {
 
-  svg: SVGSVGElement;
-  viewBox: string;
-
   shapes: IShape[];
   pages: IPage[];
-  selectedShapeId: string;
-  events: EventTarget;
 
   fileName: string;
   urlPrefix: string;
