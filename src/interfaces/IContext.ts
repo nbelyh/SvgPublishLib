@@ -6,4 +6,5 @@ export interface IContext {
   events: EventTarget;
   diagram: IDiagram;
   selectedShapeId: string;
+  baseUrl: string;
 }

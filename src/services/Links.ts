@@ -68,6 +68,18 @@ export class Links extends BaseFeature {
 
   // $("#shape-links").show();
 
+  private makeAbsoluteUrl(fileName: string) {
+    if (this.context.baseUrl) {
+      const href = this.context.baseUrl + fileName;
+      return href;
+    } else {
+      var pathname = location.pathname;
+      var newpath = pathname.substring(0, pathname.lastIndexOf('/') + 1) + fileName;
+      var href = document.location.origin + newpath;
+      return href;
+    }
+  }
+
   private buildDefaultHref(link: ILink) {
 
     const diagram = this.context.diagram;
@@ -77,10 +89,8 @@ export class Links extends BaseFeature {
 
     var linkPageId = link.PageId;
     if (linkPageId >= 0 && diagram.pages) {
-      var targetPage = diagram.pages.filter(p => p.Id === linkPageId)[0];
-      var curpath = location.pathname;
-      var newpath = curpath.replace(curpath.substring(curpath.lastIndexOf('/') + 1), targetPage.FileName);
-      var href = document.location.protocol + "//" + document.location.host + newpath;
+      var targetPage = diagram.pages.find(p => p.Id === linkPageId);
+      var href = this.makeAbsoluteUrl(targetPage.FileName);
 
       if (link.ShapeId) {
         href += "#?shape=" + link.ShapeId;
