@@ -4,11 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from '../interfaces/IContext';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 
 export interface ISelectionChangedEventArgs {
   triggerEvent: Event;
-  context: IContext;
+  context: ISvgPublishContext;
   shapeId: string;
 }
 

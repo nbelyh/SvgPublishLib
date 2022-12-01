@@ -7,7 +7,7 @@
 import { BaseFeature } from './BaseFeature';
 import { IDiagramInfo } from './IDiagramInfo';
 
-export interface IContext {
+export interface ISvgPublishContext {
   container: HTMLElement;
   svg: SVGSVGElement;
   events: EventTarget;

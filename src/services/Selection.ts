@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from "../interfaces/IContext";
+import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 import { SelectionChangedEvent } from '../events/SelectionChangedEvent';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
@@ -12,7 +12,7 @@ import { BaseFeature } from '../interfaces/BaseFeature';
 
 export class Selection extends BaseFeature {
 
-  constructor(context: IContext) {
+  constructor(context: ISvgPublishContext) {
     super(context);
 
     const diagram = this.context.diagram;

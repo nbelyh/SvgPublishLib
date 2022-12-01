@@ -4,11 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from "../interfaces/IContext";
+import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 
 export class Utils {
 
-  public static findTargetElement(id: string, context: IContext): SVGGElement {
+  public static findTargetElement(id: string, context: ISvgPublishContext): SVGGElement {
 
     const elt = context.svg.getElementById(id);
 

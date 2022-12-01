@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 import { ViewChangedEvent } from './../events';
-import { IContext } from '../interfaces/IContext';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { Geometry } from './Geometry';
 import { BaseFeature } from '../interfaces/BaseFeature';
 
@@ -23,7 +23,7 @@ export class View extends BaseFeature {
   private stateTf: DOMMatrix = null;
   private stateDiff: number = null;
 
-  constructor(context: IContext, viewBox: string) {
+  constructor(context: ISvgPublishContext, viewBox: string) {
     super(context);
 
     this.viewPort = context.container.querySelector("svg > g");
