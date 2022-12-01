@@ -41,9 +41,9 @@ export class Links extends BaseFeature {
         const onClick = (evt: PointerEvent) => {
           evt.stopPropagation();
 
-          const linkClickedEvent = new LinkClickedEvent(target, {
-            evt,
-            diagram,
+          const linkClickedEvent = new LinkClickedEvent({
+            context: this.context,
+            triggerEvent: evt,
             shape: info,
             link: defaultlink,
             href: defaultHref,

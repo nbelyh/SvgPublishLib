@@ -4,7 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { IContext } from '../interfaces/IContext';
+
 export interface IViewChangedEventArgs {
+  context: IContext;
+  triggerEvent: Event;
 }
 
 export class ViewChangedEvent extends Event {

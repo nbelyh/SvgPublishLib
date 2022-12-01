@@ -24,7 +24,7 @@ export class Selection extends BaseFeature {
 
       const clearSelection = (evt: MouseEvent) => {
         evt.stopPropagation();
-        this.setSelection(null);
+        this.setSelection(null, evt);
       }
 
       this.subscribe(this.context.svg, 'click', clearSelection);
@@ -45,7 +45,7 @@ export class Selection extends BaseFeature {
 
           const setSelection = (evt: MouseEvent) => {
             evt.stopPropagation();
-            this.setSelection(shapeId);
+            this.setSelection(shapeId, evt);
           }
 
           this.subscribe(shape, 'click', setSelection);
@@ -65,7 +65,7 @@ export class Selection extends BaseFeature {
     }
   }
 
-  public setSelection(shapeId: string) {
+  public setSelection(shapeId: string, evt?: Event) {
 
     const diagram = this.context.diagram;
 
@@ -86,7 +86,13 @@ export class Selection extends BaseFeature {
     if (!this.context.selectedShapeId || this.context.selectedShapeId !== shapeId) {
 
       this.context.selectedShapeId = shapeId;
-      if (!this.context.events.dispatchEvent(new SelectionChangedEvent({ diagram, shapeId })))
+      const selectionChangedEvent = new SelectionChangedEvent({
+        context: this.context,
+        triggerEvent: evt,
+        shapeId,
+      });
+
+      if (!this.context.events.dispatchEvent(selectionChangedEvent))
         return;
 
       const shapeToSelect = Utils.findTargetElement(shapeId, this.context);

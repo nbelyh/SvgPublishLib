@@ -4,13 +4,13 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IDiagram } from '../interfaces/IDiagram';
+import { IContext } from '../interfaces/IContext';
 import { ILinkInfo } from '../interfaces/ILinkInfo';
 import { IShapeInfo } from '../interfaces/IShapeInfo';
 
 interface ILinkClickedEventArgs {
-  evt: PointerEvent;
-  diagram: IDiagram
+  context: IContext;
+  triggerEvent: PointerEvent;
   shape: IShapeInfo;
   link: ILinkInfo;
   href: string;
@@ -19,12 +19,10 @@ interface ILinkClickedEventArgs {
 
 export class LinkClickedEvent extends Event {
 
-  elt: SVGElement;
   args: ILinkClickedEventArgs;
 
-  constructor(elt: SVGElement, args: ILinkClickedEventArgs) {
+  constructor(args: ILinkClickedEventArgs) {
     super('linkClicked', { cancelable: true });
-    this.elt = elt;
     this.args = args;
   }
 }
