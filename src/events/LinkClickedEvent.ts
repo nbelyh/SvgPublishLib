@@ -4,12 +4,15 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IShape } from '../interfaces/IShape';
+import { IDiagram } from '../interfaces/IDiagram';
+import { ILinkInfo } from '../interfaces/ILinkInfo';
+import { IShapeInfo } from '../interfaces/IShapeInfo';
 
 interface ILinkClickedEventArgs {
   evt: PointerEvent;
-  shape: IShape;
-  link: string;
+  diagram: IDiagram
+  shape: IShapeInfo;
+  link: ILinkInfo;
   href: string;
   target: string;
 }

@@ -86,7 +86,7 @@ export class Selection extends BaseFeature {
     if (!this.context.selectedShapeId || this.context.selectedShapeId !== shapeId) {
 
       this.context.selectedShapeId = shapeId;
-      if (!this.context.events.dispatchEvent(new SelectionChangedEvent({ shapeId })))
+      if (!this.context.events.dispatchEvent(new SelectionChangedEvent({ diagram, shapeId })))
         return;
 
       const shapeToSelect = Utils.findTargetElement(shapeId, this.context);

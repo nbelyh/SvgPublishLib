@@ -4,7 +4,10 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { IDiagram } from '../interfaces/IDiagram';
+
 export interface ISelectionChangedEventArgs {
+  diagram: IDiagram;
   shapeId: string;
 }
 
