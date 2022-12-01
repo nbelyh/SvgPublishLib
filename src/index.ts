@@ -4,5 +4,5 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-export * from './SvgPublish';
 export * from './events';
+export * from './SvgPublishContext'

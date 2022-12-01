@@ -5,14 +5,14 @@
 //-----------------------------------------------------------------------
 
 import { IContext } from 'interfaces/IContext';
-import { IShape } from 'interfaces/IShape';
+import { IShapeInfo } from 'interfaces/IShapeInfo';
 import { BaseFeature } from './BaseFeature';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 
 export class Hover extends BaseFeature {
 
-  private static shapeEnabled(info: IShape) {
+  private static shapeEnabled(info: IShapeInfo) {
     return info.DefaultLink
       || info.Props && Object.keys(info.Props).length
       || info.Links && info.Links.length

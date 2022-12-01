@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 import { IContext } from "interfaces/IContext";
-import { ILink } from 'interfaces/ILink';
+import { ILinkInfo } from 'interfaces/ILinkInfo';
 import { LinkClickedEvent } from 'events/LinkClickedEvent';
 import { Utils } from './Utils';
 import { BaseFeature } from './BaseFeature';
@@ -43,6 +43,7 @@ export class Links extends BaseFeature {
 
           const linkClickedEvent = new LinkClickedEvent(target, {
             evt,
+            diagram,
             shape: info,
             link: defaultlink,
             href: defaultHref,
@@ -68,19 +69,7 @@ export class Links extends BaseFeature {
 
   // $("#shape-links").show();
 
-  private makeAbsoluteUrl(fileName: string) {
-    if (this.context.baseUrl) {
-      const href = this.context.baseUrl + fileName;
-      return href;
-    } else {
-      var pathname = location.pathname;
-      var newpath = pathname.substring(0, pathname.lastIndexOf('/') + 1) + fileName;
-      var href = document.location.origin + newpath;
-      return href;
-    }
-  }
-
-  private buildDefaultHref(link: ILink) {
+  private buildDefaultHref(link: ILinkInfo) {
 
     const diagram = this.context.diagram;
 
@@ -90,7 +79,10 @@ export class Links extends BaseFeature {
     var linkPageId = link.PageId;
     if (linkPageId >= 0 && diagram.pages) {
       var targetPage = diagram.pages.find(p => p.Id === linkPageId);
-      var href = this.makeAbsoluteUrl(targetPage.FileName);
+
+      const pathname = location.pathname;
+      const newpath = pathname.substring(0, pathname.lastIndexOf('/') + 1) + targetPage.FileName;
+      let href = document.location.origin + newpath;
 
       if (link.ShapeId) {
         href += "#?shape=" + link.ShapeId;
@@ -106,7 +98,7 @@ export class Links extends BaseFeature {
     return "#";
   }
 
-  private buildLinkText(link: ILink) {
+  private buildLinkText(link: ILinkInfo) {
 
     if (link.Description)
       return link.Description;

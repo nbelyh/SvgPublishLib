@@ -6,13 +6,20 @@
 
 import { ISelectionViewOptions } from './ISelectionViewOptions';
 import { ILayerViewOptions } from './ILayerViewOptions';
-import { IShape } from './IShape';
-import { IPage } from './IPage';
+import { IShapeInfo } from './IShapeInfo';
+import { IPageInfo } from './IPageInfo';
+import { ILayerInfo } from './ILayerInfo';
 
 export interface IDiagram {
 
-  shapes: IShape[];
-  pages: IPage[];
+  shapes: IShapeInfo[];
+
+  pages: IPageInfo[];
+  currentPage: IPageInfo;
+
+  layers: ILayerInfo[];
+
+  searchIndex: any;
 
   fileName: string;
   urlPrefix: string;

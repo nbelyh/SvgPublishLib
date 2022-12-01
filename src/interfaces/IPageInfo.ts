@@ -4,11 +4,8 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-export interface ILink {
-  PageId: number;
-  ShapeId: string;
-  Zoom: string;
-  SubAddress: string;
-  Description: string;
-  Address: string;
+export interface IPageInfo {
+  Id: number;
+  Name: string;
+  FileName: string;
 }

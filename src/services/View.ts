@@ -8,11 +8,8 @@ import { ViewChangedEvent } from 'events/ViewChangedEvent';
 import { IContext } from "interfaces/IContext";
 import { BaseFeature } from 'services/BaseFeature';
 import { Geometry } from 'services/Geometry';
-import { Hover } from 'services/Hover';
-import { Links } from 'services/Links';
-import { Selection } from 'services/Selection';
 
-export class SvgPublish extends BaseFeature {
+export class View extends BaseFeature {
 
   private viewPort: SVGGElement = null;
 
@@ -26,28 +23,12 @@ export class SvgPublish extends BaseFeature {
   private stateTf: DOMMatrix = null;
   private stateDiff: number = null;
 
-  private selection: Selection;
-  private links: Links;
-  private hover: Hover;
-
   constructor(context: IContext, viewBox: string) {
     super(context);
 
     this.viewPort = context.container.querySelector("svg > g");
 
     this.initCTM(viewBox);
-
-    if (context.diagram.enableSelection) {
-      this.selection = new Selection(context);
-    }
-
-    if (context.diagram.enableLinks) {
-      this.links = new Links(context);
-    }
-
-    if (context.diagram.enableHover) {
-      this.hover = new Hover(context);
-    }
 
     this.subscribeAll();
   }
@@ -69,25 +50,6 @@ export class SvgPublish extends BaseFeature {
     } else { // Chrome/Safari/Opera/IE
       this.subscribe(container, 'mousewheel', this.handleMouseWheel);
     }
-  }
-
-  public destroy() {
-    if (this.links) {
-      this.links.destroy();
-      this.links = null;
-    }
-
-    if (this.selection) {
-      this.selection.destroy();
-      this.selection = null;
-    }
-
-    if (this.hover) {
-      this.hover.destroy();
-      this.hover = null;
-    }
-
-    super.destroy();
   }
 
   private initCTM(viewBox: string) {

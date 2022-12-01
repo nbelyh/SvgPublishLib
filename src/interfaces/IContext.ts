@@ -4,6 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { BaseFeature } from 'services/BaseFeature';
 import { IDiagram } from './IDiagram';
 
 export interface IContext {
@@ -12,5 +13,5 @@ export interface IContext {
   events: EventTarget;
   diagram: IDiagram;
   selectedShapeId: string;
-  baseUrl: string;
+  services: { [key: string]: BaseFeature };
 }
