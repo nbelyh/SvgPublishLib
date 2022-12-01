@@ -4,11 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from "interfaces/IContext";
-import { ILinkInfo } from 'interfaces/ILinkInfo';
-import { LinkClickedEvent } from 'events/LinkClickedEvent';
+import { IContext } from "../interfaces/IContext";
+import { ILinkInfo } from "../interfaces/ILinkInfo";
+import { LinkClickedEvent } from '../events';
 import { Utils } from './Utils';
-import { BaseFeature } from './BaseFeature';
+import { BaseFeature } from '../interfaces/BaseFeature';
 
 export class Links extends BaseFeature {
 

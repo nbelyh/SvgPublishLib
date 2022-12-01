@@ -4,11 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from "interfaces/IContext";
-import { SelectionChangedEvent } from 'events/SelectionChangedEvent';
+import { IContext } from "../interfaces/IContext";
+import { SelectionChangedEvent } from '../events/SelectionChangedEvent';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
-import { BaseFeature } from './BaseFeature';
+import { BaseFeature } from '../interfaces/BaseFeature';
 
 export class Selection extends BaseFeature {
 

@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from 'interfaces/IContext';
+import { IContext } from './IContext';
 
 export class BaseFeature {
 

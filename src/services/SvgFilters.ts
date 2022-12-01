@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ISelectionViewOptions } from 'interfaces/ISelectionViewOptions';
+import { ISelectionViewOptions } from '../interfaces/ISelectionViewOptions';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 

@@ -4,10 +4,10 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ViewChangedEvent } from 'events/ViewChangedEvent';
-import { IContext } from "interfaces/IContext";
-import { BaseFeature } from 'services/BaseFeature';
-import { Geometry } from 'services/Geometry';
+import { ViewChangedEvent } from './../events';
+import { IContext } from '../interfaces/IContext';
+import { Geometry } from './Geometry';
+import { BaseFeature } from '../interfaces/BaseFeature';
 
 export class View extends BaseFeature {
 
