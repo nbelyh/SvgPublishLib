@@ -1,8 +1,8 @@
-import { IContext } from 'interfaces/IContext';
-import { View } from 'services/View';
-import { Selection } from 'services/Selection';
-import { Links } from 'services/Links';
-import { Hover } from 'services/Hover';
+import { IContext } from './interfaces/IContext';
+import { View } from './services/View';
+import { Selection } from './services/Selection';
+import { Links } from './services/Links';
+import { Hover } from './services/Hover';
 
 export class SvgPublishContext {
 

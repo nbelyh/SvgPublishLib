@@ -4,9 +4,9 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from 'interfaces/IContext';
-import { IShapeInfo } from 'interfaces/IShapeInfo';
-import { BaseFeature } from './BaseFeature';
+import { IContext } from '../interfaces/IContext';
+import { IShapeInfo } from '../interfaces/IShapeInfo';
+import { BaseFeature } from '../interfaces/BaseFeature';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 

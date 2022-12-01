@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { BaseFeature } from 'services/BaseFeature';
+import { BaseFeature } from './BaseFeature';
 import { IDiagramInfo } from './IDiagramInfo';
 
 export interface IContext {
