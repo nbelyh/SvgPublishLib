@@ -114,6 +114,7 @@ export interface IDiagramInfo {
   tooltipUseMousePosition: boolean;
 
   enableHover: boolean;
+  enableHash: boolean;
 
   selectionView: ISelectionViewOptions;
   layerView: ILayerViewOptions;

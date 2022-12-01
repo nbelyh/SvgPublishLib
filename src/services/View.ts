@@ -12,6 +12,7 @@ import { BaseFeature } from '../interfaces/BaseFeature';
 export class View extends BaseFeature {
 
   private viewPort: SVGGElement = null;
+  private viewBox: string;
 
   private enableZoom = 1; // 1 or 0: enable or disable zooming (default enabled)
   private zoomScale = 0.5; // Zoom sensitivity
@@ -26,9 +27,10 @@ export class View extends BaseFeature {
   constructor(context: ISvgPublishContext, viewBox: string) {
     super(context);
 
+    this.viewBox = viewBox;
     this.viewPort = context.container.querySelector("svg > g");
 
-    this.initCTM(viewBox);
+    this.initCTM();
 
     this.subscribeAll();
   }
@@ -52,20 +54,16 @@ export class View extends BaseFeature {
     }
   }
 
-  private initCTM(viewBox: string) {
+  private initCTM() {
 
-    const bbox = viewBox.split(' ');
+    const bbox = this.viewBox.split(' ');
 
     const width = parseFloat(bbox[2]);
     const height = parseFloat(bbox[3]);
 
-    const container = this.context.container;
-    const svg = this.context.svg;
+    const { offsetWidth: maxWidth, offsetHeight: maxHeight } = this.context.container;
 
-    const maxWidth = container.offsetWidth;
-    const maxHeight = container.offsetHeight;
-
-    let m = svg.createSVGMatrix();
+    let m = this.context.svg.createSVGMatrix();
 
     const sz = Geometry.fitInBox(width, height, maxWidth, maxHeight);
 
@@ -78,42 +76,21 @@ export class View extends BaseFeature {
     m = m.scale(sz.width / width);
 
     this.setCTM(m, null);
-
-    window.addEventListener('hashchange', () => this.processHash());
-    this.processHash();
   }
 
-  private getUrlParameter(name) {
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    const results = regex.exec(location.hash);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-  }
-
-  private processHash() {
-    const startShape = this.getUrlParameter('shape');
-    if (startShape) {
-      this.setStartShape(startShape);
-    }
-
-    const startZoom = this.getUrlParameter('zoom');
-    if (startZoom) {
-      this.zoom(startZoom);
-    }
-  }
-
-  private setStartShape(shapeId) {
+  public setFocusShape(shapeId: string) {
     const p2 = this.getDefaultPoint();
     const p1 = this.getShapePoint(shapeId);
 
-    const m = this.viewPort.getCTM();
     if (p1 && p2) {
+      const m = this.viewPort.getCTM();
       const cp = p1.matrixTransform(m.inverse());
       const sp = p2.matrixTransform(m.inverse());
       this.setCTM(m.translate(sp.x - cp.x, sp.y - cp.y), null);
     }
   }
 
-  private getShapePoint(shapeId) {
+  private getShapePoint(shapeId: string) {
     const shapeElem = this.context.svg.getElementById(shapeId);
     if (!shapeElem)
       return undefined;
@@ -232,7 +209,7 @@ export class View extends BaseFeature {
       zoom with given aspect at given (client) point
   */
 
-  private zoom(z, evt?: MouseEvent) {
+  public zoom(z, evt?: MouseEvent) {
 
     const evtPt = evt
       ? this.getSvgClientPoint(this.getEventClientPoint(evt))
