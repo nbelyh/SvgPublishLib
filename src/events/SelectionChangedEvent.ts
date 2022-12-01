@@ -4,10 +4,11 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IDiagram } from '../interfaces/IDiagram';
+import { IContext } from '../interfaces/IContext';
 
 export interface ISelectionChangedEventArgs {
-  diagram: IDiagram;
+  triggerEvent: Event;
+  context: IContext;
   shapeId: string;
 }
 

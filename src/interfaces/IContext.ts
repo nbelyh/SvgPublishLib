@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------
 
 import { BaseFeature } from 'services/BaseFeature';
-import { IDiagram } from './IDiagram';
+import { IDiagramInfo } from './IDiagramInfo';
 
 export interface IContext {
   container: HTMLElement;
   svg: SVGSVGElement;
   events: EventTarget;
-  diagram: IDiagram;
+  diagram: IDiagramInfo;
   selectedShapeId: string;
   services: { [key: string]: BaseFeature };
 }

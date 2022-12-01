@@ -10,7 +10,7 @@ import { IShapeInfo } from './IShapeInfo';
 import { IPageInfo } from './IPageInfo';
 import { ILayerInfo } from './ILayerInfo';
 
-export interface IDiagram {
+export interface IDiagramInfo {
 
   shapes: IShapeInfo[];
 

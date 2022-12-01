@@ -77,7 +77,7 @@ export class View extends BaseFeature {
 
     m = m.scale(sz.width / width);
 
-    this.setCTM(this.viewPort, m);
+    this.setCTM(m, null);
 
     window.addEventListener('hashchange', () => this.processHash());
     this.processHash();
@@ -109,7 +109,7 @@ export class View extends BaseFeature {
     if (p1 && p2) {
       const cp = p1.matrixTransform(m.inverse());
       const sp = p2.matrixTransform(m.inverse());
-      this.setCTM(this.viewPort, m.translate(sp.x - cp.x, sp.y - cp.y));
+      this.setCTM(m.translate(sp.x - cp.x, sp.y - cp.y), null);
     }
   }
 
@@ -176,11 +176,11 @@ export class View extends BaseFeature {
       Sets the current transform matrix of an element.
   */
 
-  private setCTM(element, matrix) {
+  private setCTM(matrix: DOMMatrix, evt: Event) {
 
     const s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
 
-    element.setAttribute("transform", s);
+    this.viewPort.setAttribute("transform", s);
 
     // BUG with SVG arrow rendering in complex files in IE10, IE11
     // if (navigator.userAgent.match(/trident|edge/i)) {
@@ -194,7 +194,11 @@ export class View extends BaseFeature {
     //   }
     // }
 
-    this.context.events.dispatchEvent(new ViewChangedEvent({}));
+    const viewChangedEvent = new ViewChangedEvent({
+      context: this.context,
+      triggerEvent: evt
+    });
+    this.context.events.dispatchEvent(viewChangedEvent);
   }
 
   /*
@@ -211,8 +215,7 @@ export class View extends BaseFeature {
     if (this.context.diagram.enableZoomShift && !evt.shiftKey)
       return;
 
-    if (evt.preventDefault)
-      evt.preventDefault();
+    evt.preventDefault();
 
     evt.returnValue = false;
 
@@ -229,7 +232,7 @@ export class View extends BaseFeature {
       zoom with given aspect at given (client) point
   */
 
-  private zoom(z, evt?) {
+  private zoom(z, evt?: MouseEvent) {
 
     const evtPt = evt
       ? this.getSvgClientPoint(this.getEventClientPoint(evt))
@@ -240,7 +243,7 @@ export class View extends BaseFeature {
     // Compute new scale matrix in current mouse position
     const k = this.context.svg.createSVGMatrix().translate(p.x, p.y).scale(z).translate(-p.x, -p.y);
 
-    this.setCTM(this.viewPort, this.viewPort.getCTM().multiply(k));
+    this.setCTM(this.viewPort.getCTM().multiply(k), evt);
 
     if (!this.stateTf)
       this.stateTf = this.viewPort.getCTM().inverse();
@@ -257,8 +260,7 @@ export class View extends BaseFeature {
     if (!this.state)
       return;
 
-    if (evt.preventDefault)
-      evt.preventDefault();
+    evt.preventDefault();
 
     evt.returnValue = false;
 
@@ -279,7 +281,7 @@ export class View extends BaseFeature {
         this.stateDiff = currentDiff;
 
         const pp = this.getSvgClientPoint(clientPt).matrixTransform(this.stateTf);
-        this.setCTM(this.viewPort, this.stateTf.inverse().translate(pp.x - this.stateOriginSvg.x, pp.y - this.stateOriginSvg.y));
+        this.setCTM(this.stateTf.inverse().translate(pp.x - this.stateOriginSvg.x, pp.y - this.stateOriginSvg.y), evt);
       }
     }
 
@@ -291,7 +293,7 @@ export class View extends BaseFeature {
 
     if (this.state === 'pan') {
       const sp = this.getSvgClientPoint(clientPt).matrixTransform(this.stateTf);
-      this.setCTM(this.viewPort, this.stateTf.inverse().translate(sp.x - this.stateOriginSvg.x, sp.y - this.stateOriginSvg.y));
+      this.setCTM(this.stateTf.inverse().translate(sp.x - this.stateOriginSvg.x, sp.y - this.stateOriginSvg.y), evt);
     }
   }
 
@@ -304,9 +306,7 @@ export class View extends BaseFeature {
     if (evt.which !== 1)
       return false;
 
-    // prevent selection on double-click
-    if (evt.preventDefault)
-      evt.preventDefault();
+    evt.preventDefault();
 
     return this.handleTouchStart(evt);
   }
