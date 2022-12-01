@@ -13,6 +13,9 @@
   },
   "author": "Nikolay Belykh",
   "license": "ISC",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "ts-loader": "^9.4.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
