@@ -12,6 +12,5 @@ export interface ISvgPublishContext {
   svg: SVGSVGElement;
   events: EventTarget;
   diagram: IDiagramInfo;
-  selectedShapeId: string;
   services: { [key: string]: BaseFeature };
 }

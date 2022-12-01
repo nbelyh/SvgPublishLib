@@ -12,6 +12,8 @@ import { BaseFeature } from '../interfaces/BaseFeature';
 
 export class Selection extends BaseFeature {
 
+  private selectedShapeId: string = null;
+
   constructor(context: ISvgPublishContext) {
     super(context);
 
@@ -69,9 +71,9 @@ export class Selection extends BaseFeature {
 
     const diagram = this.context.diagram;
 
-    if (this.context.selectedShapeId && this.context.selectedShapeId !== shapeId) {
+    if (this.selectedShapeId && this.selectedShapeId !== shapeId) {
 
-      const selectedShape = Utils.findTargetElement(this.context.selectedShapeId, this.context);
+      const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
       if (selectedShape) {
         if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
           this.deselectBox();
@@ -80,12 +82,12 @@ export class Selection extends BaseFeature {
         }
       }
 
-      delete this.context.selectedShapeId;
+      delete this.selectedShapeId;
     }
 
-    if (!this.context.selectedShapeId || this.context.selectedShapeId !== shapeId) {
+    if (!this.selectedShapeId || this.selectedShapeId !== shapeId) {
 
-      this.context.selectedShapeId = shapeId;
+      this.selectedShapeId = shapeId;
       const selectionChangedEvent = new SelectionChangedEvent({
         context: this.context,
         triggerEvent: evt,
