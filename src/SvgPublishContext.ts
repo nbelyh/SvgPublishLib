@@ -3,6 +3,7 @@ import { View } from './services/View';
 import { Selection } from './services/Selection';
 import { Links } from './services/Links';
 import { Hover } from './services/Hover';
+import { Hash } from './services/Hash';
 
 export class SvgPublishContext {
 
@@ -43,6 +44,10 @@ export class SvgPublishContext {
 
     if (context.diagram.enableHover) {
       context.services['hover'] = new Hover(context);
+    }
+
+    if (context.diagram.enableHash) {
+      context.services['hash'] = new Hash(context);
     }
 
     return context;
