@@ -28,7 +28,6 @@ export class SvgPublishContext {
       container,
       diagram,
       events: new EventTarget,
-      selectedShapeId: undefined,
       services: {},
     };
 

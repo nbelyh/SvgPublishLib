@@ -50,13 +50,15 @@ export class Hover extends BaseFeature {
           const box = SvgFilters.createSelectionBox("vp-hover-box", rect, options);
 
           const onMouseOver = () => {
-            if (this.context.selectedShapeId !== shapeId) {
+            const selection = this.context.services.selection as any;
+            if (selection?.selectedShapeId !== shapeId) {
               shape.appendChild(box);
             }
           };
 
           const onMouseOut = () => {
-            if (this.context.selectedShapeId !== shapeId) {
+            const selection = this.context.services.selection as any;
+            if (selection?.selectedShapeId !== shapeId) {
               var box = document.getElementById("vp-hover-box");
               if (box) {
                 box.parentNode.removeChild(box);
@@ -71,12 +73,14 @@ export class Hover extends BaseFeature {
           const filter = (diagram.enableFollowHyperlinks && info.DefaultLink) ? 'url(#hyperlink)' : 'url(#hover)';
 
           const onMouseOver = () => {
-            if (this.context.selectedShapeId !== shapeId)
+            const selection = this.context.services.selection as any;
+            if (selection?.selectedShapeId !== shapeId)
               shape.setAttribute('filter', filter);
           };
 
           const onMouseOut = () => {
-            if (this.context.selectedShapeId !== shapeId)
+            const selection = this.context.services.selection as any;
+            if (selection?.selectedShapeId !== shapeId)
               shape.removeAttribute('filter');
           };
 
