@@ -30,7 +30,7 @@ export class View extends BaseFeature {
     this.viewBox = viewBox;
     this.viewPort = context.container.querySelector("svg > g");
 
-    this.initCTM();
+    this.reset();
 
     this.subscribeAll();
   }
@@ -54,7 +54,7 @@ export class View extends BaseFeature {
     }
   }
 
-  private initCTM() {
+  public reset() {
 
     const bbox = this.viewBox.split(' ');
 
