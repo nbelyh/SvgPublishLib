@@ -4,14 +4,14 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from './IContext';
+import { ISvgPublishContext } from './ISvgPublishContext';
 
 export class BaseFeature {
 
-  protected context: IContext;
+  protected context: ISvgPublishContext;
   private unsubscribeList = [];
 
-  constructor(context: IContext) {
+  constructor(context: ISvgPublishContext) {
     this.context = context;
   }
 

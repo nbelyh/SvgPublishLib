@@ -6,3 +6,4 @@
 
 export * from './events';
 export * from './SvgPublishContext'
+export * from './interfaces/ISvgPublishContext';

@@ -1,4 +1,4 @@
-import { IContext } from './interfaces/IContext';
+import { ISvgPublishContext } from './interfaces/ISvgPublishContext';
 import { View } from './services/View';
 import { Selection } from './services/Selection';
 import { Links } from './services/Links';
@@ -6,7 +6,7 @@ import { Hover } from './services/Hover';
 
 export class SvgPublishContext {
 
-  public static create(container: HTMLElement, content: string): IContext {
+  public static create(container: HTMLElement, content: string): ISvgPublishContext {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/xml');
@@ -22,7 +22,7 @@ export class SvgPublishContext {
     container.innerHTML = doc.documentElement.outerHTML;
     const svg = container.querySelector('svg');
 
-    const context: IContext = {
+    const context: ISvgPublishContext = {
       svg,
       container,
       diagram,
@@ -48,7 +48,7 @@ export class SvgPublishContext {
     return context;
   }
 
-  public static destroy(context: IContext) {
+  public static destroy(context: ISvgPublishContext) {
     for (const serviceKey in context.services) {
       const service = context.services[serviceKey];
       service.destroy();

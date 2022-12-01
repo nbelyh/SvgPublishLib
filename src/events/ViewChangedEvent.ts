@@ -4,10 +4,10 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from '../interfaces/IContext';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 
 export interface IViewChangedEventArgs {
-  context: IContext;
+  context: ISvgPublishContext;
   triggerEvent: Event;
 }
 

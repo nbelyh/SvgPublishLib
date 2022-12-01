@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from '../interfaces/IContext';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { IShapeInfo } from '../interfaces/IShapeInfo';
 import { BaseFeature } from '../interfaces/BaseFeature';
 import { SvgFilters } from './SvgFilters';
@@ -19,7 +19,7 @@ export class Hover extends BaseFeature {
       || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
   }
 
-  constructor(context: IContext) {
+  constructor(context: ISvgPublishContext) {
     super(context);
 
     const diagram = this.context.diagram;

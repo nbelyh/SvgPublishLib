@@ -4,12 +4,12 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { IContext } from '../interfaces/IContext';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { ILinkInfo } from '../interfaces/ILinkInfo';
 import { IShapeInfo } from '../interfaces/IShapeInfo';
 
 interface ILinkClickedEventArgs {
-  context: IContext;
+  context: ISvgPublishContext;
   triggerEvent: PointerEvent;
   shape: IShapeInfo;
   link: ILinkInfo;
