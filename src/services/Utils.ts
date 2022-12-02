@@ -4,9 +4,17 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { IShapeInfo } from '../interfaces/IShapeInfo';
 import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 
 export class Utils {
+
+  public static isShapeInteractive(info: IShapeInfo) {
+    return info.DefaultLink
+      || info.Props && Object.keys(info.Props).length
+      || info.Links && info.Links.length
+      || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
+  }
 
   public static findTargetElement(id: string, context: ISvgPublishContext): SVGGElement {
 

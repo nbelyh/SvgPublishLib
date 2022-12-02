@@ -4,16 +4,17 @@ import { Selection } from './services/Selection';
 import { Links } from './services/Links';
 import { Hover } from './services/Hover';
 import { Hash } from './services/Hash';
+import { IDiagramInfo } from './interfaces/IDiagramInfo';
 
 export class SvgPublishContext {
 
-  public static create(container: HTMLElement, content: string): ISvgPublishContext {
+  public static create(container: HTMLElement, content: string, init?: Partial<IDiagramInfo>): ISvgPublishContext {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/xml');
 
     const diagramNode = doc.documentElement.getElementsByTagNameNS("http://vispublish", "SvgPublishData")[0];
-    const diagram = diagramNode && JSON.parse(diagramNode.innerHTML);
+    const diagram = {...diagramNode && JSON.parse(diagramNode.innerHTML), ...init };
 
     const viewBox = diagram.viewBox || doc.documentElement.getAttribute('viewBox');
     doc.documentElement.removeAttribute('viewBox');

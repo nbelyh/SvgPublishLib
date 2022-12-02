@@ -34,11 +34,8 @@ export class Selection extends BaseFeature {
       for (const shapeId in diagram.shapes) {
 
         const info = diagram.shapes[shapeId];
-        if (info.DefaultLink
-          || info.Props && Object.keys(info.Props).length
-          || info.Links && info.Links.length
-          || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
-        ) {
+        if (Utils.isShapeInteractive(info)) {
+
           const shape = Utils.findTargetElement(shapeId, context);
           if (!shape)
             return;
