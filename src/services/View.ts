@@ -14,7 +14,9 @@ export class View extends BaseFeature {
   private viewPort: SVGGElement = null;
   private viewBox: string;
 
-  private enableZoom = 1; // 1 or 0: enable or disable zooming (default enabled)
+  private enableZoom = true; // 1 or 0: enable or disable zooming (default enabled)
+  private enablePan = true;
+
   private zoomScale = 0.5; // Zoom sensitivity
   private panDelta = 3; // start pan on move
 
@@ -280,6 +282,9 @@ export class View extends BaseFeature {
 
   private handleMouseDown = (evt) => {
 
+    if (!this.enablePan)
+      return false;
+
     if (evt.which !== 1)
       return false;
 
@@ -289,6 +294,9 @@ export class View extends BaseFeature {
   }
 
   private handleTouchStart = (evt: TouchEvent) => {
+
+    if (!this.enablePan)
+      return false;
 
     const touches = evt.touches;
 

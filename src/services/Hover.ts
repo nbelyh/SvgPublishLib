@@ -12,13 +12,6 @@ import { Utils } from './Utils';
 
 export class Hover extends BaseFeature {
 
-  private static shapeEnabled(info: IShapeInfo) {
-    return info.DefaultLink
-      || info.Props && Object.keys(info.Props).length
-      || info.Links && info.Links.length
-      || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
-  }
-
   constructor(context: ISvgPublishContext) {
     super(context);
 
@@ -27,7 +20,7 @@ export class Hover extends BaseFeature {
     for (const shapeId in diagram.shapes) {
 
       var info = diagram.shapes[shapeId];
-      if (Hover.shapeEnabled(info)) {
+      if (Utils.isShapeInteractive(info)) {
         const shape = Utils.findTargetElement(shapeId, this.context);
         if (!shape)
           continue;
