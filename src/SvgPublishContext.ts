@@ -5,16 +5,23 @@ import { LinksService } from './services/LinksService';
 import { HoverService } from './services/HoverService';
 import { HashService } from './services/HashService';
 import { IDiagramInfo } from './interfaces/IDiagramInfo';
+import { IServices } from './interfaces/IServices';
 
-export class SvgPublishContext {
+export class SvgPublishContext implements ISvgPublishContext {
 
-  public static create(container: HTMLElement, content: string, init?: Partial<IDiagramInfo>): ISvgPublishContext {
+  container: HTMLElement;
+  svg: SVGSVGElement;
+  events: EventTarget;
+  diagram: IDiagramInfo;
+  services: IServices;
+
+  public constructor(container: HTMLElement, content: string, init?: Partial<IDiagramInfo>) {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/xml');
 
     const diagramNode = doc.documentElement.getElementsByTagNameNS("http://vispublish", "SvgPublishData")[0];
-    const diagram = {...diagramNode && JSON.parse(diagramNode.innerHTML), ...init };
+    const diagram = { ...diagramNode && JSON.parse(diagramNode.innerHTML), ...init };
 
     const viewBox = diagram.viewBox || doc.documentElement.getAttribute('viewBox');
     doc.documentElement.removeAttribute('viewBox');
@@ -22,47 +29,60 @@ export class SvgPublishContext {
     doc.documentElement.setAttribute('height', '100%');
 
     container.innerHTML = doc.documentElement.outerHTML;
-    const svg = container.querySelector('svg');
 
-    const context: ISvgPublishContext = {
-      svg,
-      container,
-      diagram,
-      events: new EventTarget,
-      services: {},
-    };
+    this.container = container;
+    this.svg = container.querySelector('svg');
+    this.events = new EventTarget;
+    this.diagram = diagram;
 
-    context.services.view = new ViewService(context, viewBox);
+    this.services = {};
 
-    if (context.diagram.enableSelection) {
-      context.services.selection = new SelectionService(context);
+    this.services.view = new ViewService(this, viewBox);
+
+    if (this.diagram.enableSelection) {
+      this.enableService('selection', true);
     }
 
-    if (context.diagram.enableLinks) {
-      context.services.links = new LinksService(context);
+    if (this.diagram.enableLinks) {
+      this.enableService('links', true);
     }
 
-    if (context.diagram.enableHover) {
-      context.services.hover = new HoverService(context);
+    if (this.diagram.enableHover) {
+      this.enableService('hover', true);
     }
 
-    if (context.diagram.enableHash) {
-      context.services.hash = new HashService(context);
+    if (this.diagram.enableHash) {
+      this.enableService('hash', true);
     }
-
-    return context;
   }
 
-  public static destroy(context: ISvgPublishContext) {
-    for (const serviceKey in context.services) {
-      const service = context.services[serviceKey];
-      service.destroy();
+  public destroy() {
+    const serviceKeys = Object.keys(this.services) as (keyof IServices)[];
+    for (const serviceKey of serviceKeys) {
+      this.destroyService(serviceKey);
     }
-    context.container.innerHTML = '';
+    this.container.innerHTML = '';
   }
 
-  public static enableService(context: ISvgPublishContext) {
-
+  private createService(name: keyof IServices) {
+    switch (name) {
+      case 'selection': return new SelectionService(this);
+      case 'links': return new LinksService(this);
+      case 'hover': return new HoverService(this);
+      case 'hash': return new HashService(this);
+    }
   }
 
+  private destroyService(name: keyof IServices) {
+    this.services[name].destroy();
+    delete this.services[name];
+  }
+
+  public enableService(name: keyof IServices, enable: boolean) {
+    if (enable) {
+      this.services[name] = this.createService(name) as any;
+    } else {
+      this.destroyService(name);
+    }
+  }
 }
