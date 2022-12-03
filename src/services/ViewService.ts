@@ -38,6 +38,12 @@ export class ViewService extends BasicService implements IViewService {
     this.subscribeAll();
   }
 
+  public isPanEnabled() { return this.enablePan; }
+  public setPanEnabled(val: boolean) { this.enablePan = val; }
+
+  public isZoomEnabled() { return this.enableZoom; }
+  public setZoomEnabled(val: boolean) { this.enableZoom = val; }
+
   private subscribeAll() {
     const container = this.context.container;
     const svg = this.context.svg;
