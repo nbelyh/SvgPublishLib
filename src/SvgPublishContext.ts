@@ -1,9 +1,9 @@
 import { ISvgPublishContext } from './interfaces/ISvgPublishContext';
-import { View } from './services/View';
-import { Selection } from './services/Selection';
-import { Links } from './services/Links';
-import { Hover } from './services/Hover';
-import { Hash } from './services/Hash';
+import { ViewService } from './services/ViewService';
+import { SelectionService } from './services/SelectionService';
+import { LinksService } from './services/LinksService';
+import { HoverService } from './services/HoverService';
+import { HashService } from './services/HashService';
 import { IDiagramInfo } from './interfaces/IDiagramInfo';
 
 export class SvgPublishContext {
@@ -32,22 +32,22 @@ export class SvgPublishContext {
       services: {},
     };
 
-    context.services['view'] = new View(context, viewBox);
+    context.services.view = new ViewService(context, viewBox);
 
     if (context.diagram.enableSelection) {
-      context.services['selection'] = new Selection(context);
+      context.services.selection = new SelectionService(context);
     }
 
     if (context.diagram.enableLinks) {
-      context.services['links'] = new Links(context);
+      context.services.links = new LinksService(context);
     }
 
     if (context.diagram.enableHover) {
-      context.services['hover'] = new Hover(context);
+      context.services.hover = new HoverService(context);
     }
 
     if (context.diagram.enableHash) {
-      context.services['hash'] = new Hash(context);
+      context.services.hash = new HashService(context);
     }
 
     return context;
@@ -59,6 +59,10 @@ export class SvgPublishContext {
       service.destroy();
     }
     context.container.innerHTML = '';
+  }
+
+  public static enableService(context: ISvgPublishContext) {
+
   }
 
 }

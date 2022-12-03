@@ -5,12 +5,12 @@
 //-----------------------------------------------------------------------
 
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
-import { IShapeInfo } from '../interfaces/IShapeInfo';
-import { BaseFeature } from '../interfaces/BaseFeature';
+import { BasicService } from './BasicService';
+import { IHoverService } from '../interfaces/IHoverService';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 
-export class Hover extends BaseFeature {
+export class HoverService extends BasicService implements IHoverService {
 
   constructor(context: ISvgPublishContext) {
     super(context);
@@ -43,15 +43,13 @@ export class Hover extends BaseFeature {
           const box = SvgFilters.createSelectionBox("vp-hover-box", rect, options);
 
           const onMouseOver = () => {
-            const selection = this.context.services.selection as any;
-            if (selection?.selectedShapeId !== shapeId) {
+            if (this.context.services.selection?.selectedShapeId !== shapeId) {
               shape.appendChild(box);
             }
           };
 
           const onMouseOut = () => {
-            const selection = this.context.services.selection as any;
-            if (selection?.selectedShapeId !== shapeId) {
+            if (this.context.services.selection?.selectedShapeId !== shapeId) {
               var box = document.getElementById("vp-hover-box");
               if (box) {
                 box.parentNode.removeChild(box);
@@ -66,14 +64,12 @@ export class Hover extends BaseFeature {
           const filter = (diagram.enableFollowHyperlinks && info.DefaultLink) ? 'url(#hyperlink)' : 'url(#hover)';
 
           const onMouseOver = () => {
-            const selection = this.context.services.selection as any;
-            if (selection?.selectedShapeId !== shapeId)
+            if (this.context.services.selection?.selectedShapeId !== shapeId)
               shape.setAttribute('filter', filter);
           };
 
           const onMouseOut = () => {
-            const selection = this.context.services.selection as any;
-            if (selection?.selectedShapeId !== shapeId)
+            if (this.context.services.selection?.selectedShapeId !== shapeId)
               shape.removeAttribute('filter');
           };
 

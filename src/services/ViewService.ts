@@ -4,12 +4,13 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ViewChangedEvent } from './../events';
+import { ViewChangedEvent } from '../events';
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { Geometry } from './Geometry';
-import { BaseFeature } from '../interfaces/BaseFeature';
+import { BasicService } from './BasicService';
+import { IViewService } from '../interfaces/IViewService';
 
-export class View extends BaseFeature {
+export class ViewService extends BasicService implements IViewService {
 
   private viewPort: SVGGElement = null;
   private viewBox: string;
@@ -211,7 +212,7 @@ export class View extends BaseFeature {
       zoom with given aspect at given (client) point
   */
 
-  public zoom(z, evt?: MouseEvent) {
+  public zoom(z: number, evt?: MouseEvent) {
 
     const evtPt = evt
       ? this.getSvgClientPoint(this.getEventClientPoint(evt))

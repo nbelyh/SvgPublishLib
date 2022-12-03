@@ -4,9 +4,10 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ISvgPublishContext } from './ISvgPublishContext';
+import { IBasicService } from '../interfaces/IBasicService';
+import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 
-export class BaseFeature {
+export class BasicService implements IBasicService {
 
   protected context: ISvgPublishContext;
   private unsubscribeList = [];
@@ -15,7 +16,7 @@ export class BaseFeature {
     this.context = context;
   }
 
-  public subscribe(target: Element | Window, name: string, handler: (evt: Event) => void, options?: boolean | AddEventListenerOptions) {
+  protected subscribe(target: Element | Window, name: string, handler: (evt: Event) => void, options?: boolean | AddEventListenerOptions) {
     target.addEventListener(name, handler, options);
     this.unsubscribeList.push(() => target.removeEventListener(name, handler));
   }
