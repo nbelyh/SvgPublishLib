@@ -15,9 +15,9 @@ export class SvgFilters {
     var matchRGBA = /rgba\((\d{1,3}), (\d{1,3}), (\d{1,3}), ([\d|\.]+)\)/.exec(input);
     if (matchRGBA) {
       return {
-        r: parseInt(matchRGBA[1]),
-        g: parseInt(matchRGBA[2]),
-        b: parseInt(matchRGBA[3]),
+        r: parseInt(matchRGBA[1]) / 255,
+        g: parseInt(matchRGBA[2]) / 255,
+        b: parseInt(matchRGBA[3]) / 255,
         a: parseFloat(matchRGBA[4])
       }
     }
@@ -25,9 +25,9 @@ export class SvgFilters {
     var matchRGB = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/.exec(input);
     if (matchRGB) {
       return {
-        r: parseInt(matchRGB[1]),
-        g: parseInt(matchRGB[2]),
-        b: parseInt(matchRGB[3]),
+        r: parseInt(matchRGB[1]) / 255,
+        g: parseInt(matchRGB[2]) / 255,
+        b: parseInt(matchRGB[3]) / 255,
         a: 1
       }
     }
@@ -35,9 +35,9 @@ export class SvgFilters {
     var matchHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(input);
     if (matchHex) {
       return {
-        r: parseInt(matchHex[1], 16),
-        g: parseInt(matchHex[2], 16),
-        b: parseInt(matchHex[3], 16),
+        r: parseInt(matchHex[1], 16) / 255,
+        g: parseInt(matchHex[2], 16) / 255,
+        b: parseInt(matchHex[3], 16) / 255,
         a: 1
       }
     }
@@ -110,9 +110,9 @@ export class SvgFilters {
 
     const c = SvgFilters.colorToRGBA(options.color);
     feColorMatrixNode.setAttribute('values', `
-      ${c.r} ${c.r} ${c.r} ${c.r} ${c.r}
-      ${c.g} ${c.g} ${c.g} ${c.g} ${c.g}
-      ${c.b} ${c.b} ${c.b} ${c.b} ${c.b}
+      0 0 0 0 ${c.r}
+      0 0 0 0 ${c.g}
+      0 0 0 0 ${c.b}
       0 0 0 ${c.a} 0`);
     feColorMatrixNode.setAttribute('result', 'matrix');
     filterNode.appendChild(feColorMatrixNode);
