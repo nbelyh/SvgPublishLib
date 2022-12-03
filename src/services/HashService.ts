@@ -1,8 +1,8 @@
-import { BaseFeature } from '../interfaces/BaseFeature';
+import { BasicService } from './BasicService';
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
-import { View } from './View';
+import { IHashService } from '../interfaces/IHashService';
 
-export class Hash extends BaseFeature {
+export class HashService extends BasicService implements IHashService {
 
   constructor(context: ISvgPublishContext) {
     super(context);
@@ -16,16 +16,14 @@ export class Hash extends BaseFeature {
   }
 
   private processHash() {
-    const startShape = Hash.getUrlParameter('shape');
+    const startShape = HashService.getUrlParameter('shape');
     if (startShape) {
-      const view = this.context.services.view as View;
-      view.setFocusShape(startShape);
+      this.context.services.view.setFocusShape(startShape);
     }
 
-    const startZoom = Hash.getUrlParameter('zoom');
+    const startZoom = HashService.getUrlParameter('zoom');
     if (startZoom) {
-      const view = this.context.services.view as View;
-      view.zoom(startZoom);
+      this.context.services.view.zoom(+startZoom);
     }
   }
 

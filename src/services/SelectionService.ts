@@ -8,11 +8,12 @@ import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 import { SelectionChangedEvent } from '../events/SelectionChangedEvent';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
-import { BaseFeature } from '../interfaces/BaseFeature';
+import { BasicService } from './BasicService';
+import { ISelectionService } from '../interfaces/ISelectionService';
 
-export class Selection extends BaseFeature {
+export class SelectionService extends BasicService implements ISelectionService {
 
-  private selectedShapeId: string = null;
+  public selectedShapeId: string = null;
 
   constructor(context: ISvgPublishContext) {
     super(context);

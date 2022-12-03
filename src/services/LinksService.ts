@@ -8,9 +8,9 @@ import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 import { ILinkInfo } from "../interfaces/ILinkInfo";
 import { LinkClickedEvent } from '../events';
 import { Utils } from './Utils';
-import { BaseFeature } from '../interfaces/BaseFeature';
+import { BasicService } from './BasicService';
 
-export class Links extends BaseFeature {
+export class LinksService extends BasicService {
 
   constructor(context: ISvgPublishContext) {
     super(context);
