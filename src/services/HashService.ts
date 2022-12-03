@@ -7,6 +7,7 @@ export class HashService extends BasicService implements IHashService {
   constructor(context: ISvgPublishContext) {
     super(context);
     this.subscribe(window, 'hashchange', this.processHash);
+    this.processHash();
   }
 
   public static getUrlParameter(name: string) {
