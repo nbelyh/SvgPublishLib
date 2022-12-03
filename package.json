@@ -1,6 +1,6 @@
 {
   "name": "svgpublish",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "The support library for SvgPublish",
   "main": "dist/svgpublish.js",
   "module": "dist/svgpublish.js",
