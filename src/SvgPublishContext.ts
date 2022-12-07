@@ -6,6 +6,7 @@ import { HoverService } from './services/HoverService';
 import { HashService } from './services/HashService';
 import { IDiagramInfo } from './interfaces/IDiagramInfo';
 import { IServices } from './interfaces/IServices';
+import { VisioSvgParser } from './services/VisioSvgParser';
 
 export class SvgPublishContext implements ISvgPublishContext {
 
@@ -17,23 +18,14 @@ export class SvgPublishContext implements ISvgPublishContext {
 
   public constructor(container: HTMLElement, content: string, init?: Partial<IDiagramInfo>) {
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/xml');
+    const { svgXml, viewBox, diagramInfo } = VisioSvgParser.parse(content);
 
-    const diagramNode = doc.documentElement.getElementsByTagNameNS("http://vispublish", "SvgPublishData")[0];
-    const diagram = { ...diagramNode && JSON.parse(diagramNode.innerHTML), ...init };
-
-    const viewBox = diagram.viewBox || doc.documentElement.getAttribute('viewBox');
-    doc.documentElement.removeAttribute('viewBox');
-    doc.documentElement.setAttribute('width', '100%');
-    doc.documentElement.setAttribute('height', '100%');
-
-    container.innerHTML = doc.documentElement.outerHTML;
+    container.innerHTML = svgXml;
 
     this.container = container;
     this.svg = container.querySelector('svg');
     this.events = new EventTarget;
-    this.diagram = diagram;
+    this.diagram = { ...diagramInfo, ...init };
 
     this.services = {};
 
