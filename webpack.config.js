@@ -4,6 +4,9 @@ module.exports = {
   entry: './src/index.ts',
   devtool: 'source-map',
   mode: 'development',
+  experiments: {
+    outputModule: true,
+  },
   module: {
     rules: [
       {
@@ -20,8 +23,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'svgpublish.js',
     library: {
-      name: 'svgpublish',
-      type: 'umd'
+      type: 'module'
     }
   },
   watchOptions: {
