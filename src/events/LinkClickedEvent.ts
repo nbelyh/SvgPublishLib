@@ -19,7 +19,7 @@ interface ILinkClickedEventArgs {
 
 export class LinkClickedEvent extends Event {
 
-  args: ILinkClickedEventArgs;
+  args?: ILinkClickedEventArgs;
 
   constructor(args: ILinkClickedEventArgs) {
     super('linkClicked', { cancelable: true });
