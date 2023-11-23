@@ -66,8 +66,10 @@ export class SvgPublishContext implements ISvgPublishContext {
   }
 
   private destroyService(name: keyof IServices) {
-    this.services[name].destroy();
-    delete this.services[name];
+    if (this.services[name]) {
+      this.services[name].destroy();
+      delete this.services[name];
+    }
   }
 
   public enableService(name: keyof IServices, enable: boolean) {
