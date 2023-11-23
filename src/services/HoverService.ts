@@ -9,6 +9,7 @@ import { BasicService } from './BasicService';
 import { IHoverService } from '../interfaces/IHoverService';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
+import { DefaultColors } from './Constants';
 
 export class HoverService extends BasicService implements IHoverService {
 
@@ -18,6 +19,7 @@ export class HoverService extends BasicService implements IHoverService {
   }
 
   public reset() {
+
     const diagram = this.context.diagram;
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hover", {
@@ -26,7 +28,7 @@ export class HoverService extends BasicService implements IHoverService {
       enableBlur: !!diagram.selectionView?.enableBlur,
       enableDilate: !!diagram.selectionView?.enableDilate,
       mode: diagram.selectionView?.mode || "normal",
-      color: diagram.selectionView.hoverColor ?? "rgba(255, 255, 0, 0.2)"
+      color: diagram.selectionView.hoverColor ?? DefaultColors.hover
     });
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hyperlink", {
@@ -35,7 +37,7 @@ export class HoverService extends BasicService implements IHoverService {
       enableBlur: !!diagram.selectionView?.enableBlur,
       enableDilate: !!diagram.selectionView?.enableDilate,
       mode: diagram.selectionView?.mode || "normal",
-      color: diagram.selectionView.hyperlinkColor ?? "rgba(0, 0, 255, 0.2)"
+      color: diagram.selectionView.hyperlinkColor ?? DefaultColors.hyperlink
     });
 
     for (const shapeId in diagram.shapes) {
@@ -50,8 +52,8 @@ export class HoverService extends BasicService implements IHoverService {
         const selectionView = diagram.selectionView;
         if (selectionView?.enableBoxSelection) {
 
-          const hyperlinkColor = selectionView.hyperlinkColor || "rgba(0, 0, 255, 0.2)";
-          const hoverColor = selectionView.hoverColor || "rgba(255, 255, 0, 0.2)";
+          const hyperlinkColor = selectionView.hyperlinkColor || DefaultColors.hyperlink;
+          const hoverColor = selectionView.hoverColor || DefaultColors.hover;
 
           var rect = shape.getBBox();
           const options = {
