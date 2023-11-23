@@ -14,8 +14,29 @@ export class HoverService extends BasicService implements IHoverService {
 
   constructor(context: ISvgPublishContext) {
     super(context);
+    this.reset();
+  }
 
+  public reset() {
     const diagram = this.context.diagram;
+
+    SvgFilters.createFilterNode(this.context.svg, "vp-filter-hover", {
+      blur: diagram.selectionView?.blur || 2,
+      dilate: diagram.selectionView?.dilate || 2,
+      enableBlur: !!diagram.selectionView?.enableBlur,
+      enableDilate: !!diagram.selectionView?.enableDilate,
+      mode: diagram.selectionView?.mode || "normal",
+      color: diagram.selectionView.hoverColor ?? "rgba(255, 255, 0, 0.2)"
+    });
+
+    SvgFilters.createFilterNode(this.context.svg, "vp-filter-hyperlink", {
+      blur: diagram.selectionView?.blur || 2,
+      dilate: diagram.selectionView?.dilate || 2,
+      enableBlur: !!diagram.selectionView?.enableBlur,
+      enableDilate: !!diagram.selectionView?.enableDilate,
+      mode: diagram.selectionView?.mode || "normal",
+      color: diagram.selectionView.hyperlinkColor ?? "rgba(0, 0, 255, 0.2)"
+    });
 
     for (const shapeId in diagram.shapes) {
 
@@ -61,7 +82,7 @@ export class HoverService extends BasicService implements IHoverService {
           this.subscribe(shape, 'mouseout', onMouseOut);
         } else {
 
-          const filter = (diagram.enableFollowHyperlinks && info.DefaultLink) ? 'url(#hyperlink)' : 'url(#hover)';
+          const filter = (diagram.enableFollowHyperlinks && info.DefaultLink) ? 'url(#vp-filter-hyperlink)' : 'url(#vp-filter-hover)';
 
           const onMouseOver = () => {
             if (this.context.services.selection?.selectedShapeId !== shapeId)

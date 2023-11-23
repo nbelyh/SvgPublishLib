@@ -7,29 +7,29 @@
 export interface ISelectionViewOptions {
 
   /// Enable "simple box" selection style
-  enableBoxSelection: boolean;
+  enableBoxSelection?: boolean;
 
   /// Size of the dilate
-  dilate: number;
+  dilate?: number;
 
   /// Size of blur
-  blur: number;
+  blur?: number;
 
   /// Enable blur (empty for none)
-  enableBlur: boolean;
+  enableBlur?: boolean;
 
   /// Enable dilate (empty for none)
-  enableDilate: boolean;
+  enableDilate?: boolean;
 
   /// Mode, "normal" for border only, lighten/darken for full box
-  mode: string;
+  mode?: 'normal' | 'lighten' | 'darken';
 
   /// Shape hover color
-  hoverColor: string;
+  hoverColor?: string;
 
   /// Hyperlink hover color
-  hyperlinkColor: string;
+  hyperlinkColor?: string;
 
   /// Shape selection color
-  selectColor: string;
+  selectColor?: string;
 }
