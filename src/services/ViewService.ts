@@ -31,12 +31,48 @@ export class ViewService extends BasicService implements IViewService {
     super(context);
 
     this.viewBox = viewBox;
-    this.viewPort = context.container.querySelector("svg > g");
+    const rootItems = context.svg.querySelectorAll([
+      'svg > g',
+      'svg > use',
+      'svg > image',
+      'svg > switch',
+      'svg > path',
+      'svg > rect',
+      'svg > circle',
+      'svg > ellipse',
+      'svg > line',
+      'svg > polyline',
+      'svg > polygon',
+      'svg > text',
+      'svg > textPath',
+      'svg > tspan',
+      'svg > tref',
+      'svg > foreignObject'
+    ].join(','));
+
+    // if this is not a viewport then we need to create one
+    if (rootItems.length > 1 || rootItems[0].getAttribute('transform')) {
+      this.viewPort = this.wrapSvgContentsInGroup(this.context.svg);
+    } else {
+      this.viewPort = rootItems[0] as SVGGElement;
+    }
 
     this.reset();
 
     this.subscribeAll();
   }
+
+  private wrapSvgContentsInGroup(svgElement: SVGSVGElement) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const group = document.createElementNS(svgNS, 'g');
+
+    while (svgElement.firstChild) {
+        group.appendChild(svgElement.firstChild);
+    }
+
+    svgElement.appendChild(group);
+    return group;
+}
 
   public isPanEnabled() { return this.enablePan; }
   public setPanEnabled(val: boolean) { this.enablePan = val; }
@@ -48,18 +84,23 @@ export class ViewService extends BasicService implements IViewService {
     const container = this.context.container;
     const svg = this.context.svg;
 
-    this.subscribe(container, "mousedown", this.handleMouseDown);
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    this.subscribe(container, "mousedown", this.handleMouseDown, { passive: false});
     this.subscribe(container, "mouseup", this.handleMouseUp);
-    this.subscribe(container, "mousemove", this.handleMouseMove);
-    this.subscribe(container, "touchstart", this.handleTouchStart);
-    this.subscribe(container, "touchmove", this.handleMouseMove);
+    this.subscribe(container, "mousemove", this.handleMouseMove, { passive: false });
+
+    if (isTouch) {
+      this.subscribe(container, "touchstart", this.handleTouchStart, { passive: true });
+      this.subscribe(container, "touchmove", this.handleMouseMove, { passive: false });
+    }
 
     this.subscribe(svg, 'click', this.handleClick, true);
 
     if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0) { // Firefox
-      this.subscribe(container, 'DOMMouseScroll', this.handleMouseWheel);
+      this.subscribe(container, 'DOMMouseScroll', this.handleMouseWheel, { passive: false });
     } else { // Chrome/Safari/Opera/IE
-      this.subscribe(container, 'mousewheel', this.handleMouseWheel);
+      this.subscribe(container, 'mousewheel', this.handleMouseWheel, { passive: false });
     }
   }
 
@@ -167,18 +208,6 @@ export class ViewService extends BasicService implements IViewService {
     const s = "matrix(" + matrix.a + "," + matrix.b + "," + matrix.c + "," + matrix.d + "," + matrix.e + "," + matrix.f + ")";
 
     this.viewPort.setAttribute("transform", s);
-
-    // BUG with SVG arrow rendering in complex files in IE10, IE11
-    // if (navigator.userAgent.match(/trident|edge/i)) {
-
-    //   if (typeof this.svg.style.strokeMiterlimit !== 'undefined') {
-
-    //     if (this.svg.style.strokeMiterlimit !== "3")
-    //       this.svg.style.strokeMiterlimit = "3";
-    //     else
-    //       this.svg.style.strokeMiterlimit = "2";
-    //   }
-    // }
 
     const viewChangedEvent = new ViewChangedEvent({
       context: this.context,
