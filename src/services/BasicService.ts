@@ -21,8 +21,12 @@ export class BasicService implements IBasicService {
     this.unsubscribeList.push(() => target.removeEventListener(name, handler));
   }
 
-  public destroy() {
+  protected unsubscribe() {
     this.unsubscribeList.forEach(unsubscribe => unsubscribe());
     this.unsubscribeList = [];
+  }
+
+  public destroy() {
+    this.unsubscribe();
   }
 }

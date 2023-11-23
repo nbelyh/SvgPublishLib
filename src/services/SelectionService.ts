@@ -15,6 +15,7 @@ import { DefaultColors } from './Constants';
 export class SelectionService extends BasicService implements ISelectionService {
 
   public selectedShapeId: string = null;
+  public enableBoxSelection: boolean = false;
 
   constructor(context: ISvgPublishContext) {
     super(context);
@@ -22,15 +23,26 @@ export class SelectionService extends BasicService implements ISelectionService 
   }
 
   public reset() {
+
+    this.unsubscribe();
+
+    const selectedShapeId = this.selectedShapeId;
+    if (selectedShapeId) {
+      this.clearSelection();
+    }
+
     const diagram = this.context.diagram;
+    const selectionView = diagram.selectionView;
+
+    this.enableBoxSelection = !!selectionView?.enableBoxSelection;
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-select", {
-      blur: diagram.selectionView?.blur || 2,
-      dilate: diagram.selectionView?.dilate || 2,
-      enableBlur: !!diagram.selectionView?.enableBlur,
-      enableDilate: !!diagram.selectionView?.enableDilate,
-      mode: diagram.selectionView?.mode || "normal",
-      color: diagram.selectionView.selectColor ?? DefaultColors.selection
+      blur: selectionView?.blur || 2,
+      dilate: selectionView?.dilate || 2,
+      enableBlur: !!selectionView?.enableBlur,
+      enableDilate: !!selectionView?.enableDilate,
+      mode: selectionView?.mode || "normal",
+      color: selectionView?.selectColor ?? DefaultColors.selection
     });
 
     const clearSelection = (evt: MouseEvent) => {
@@ -59,6 +71,10 @@ export class SelectionService extends BasicService implements ISelectionService 
         this.subscribe(shape, 'click', setSelection);
       }
     }
+
+    if (selectedShapeId) {
+      this.setSelection(selectedShapeId);
+    }
   }
 
   private deselectBox() {
@@ -74,20 +90,18 @@ export class SelectionService extends BasicService implements ISelectionService 
 
   public destroy(): void {
     this.deselectBox();
-    const defsNode = document.getElementById("vp-filter-defs");
-    if (defsNode) {
-      defsNode.parentNode.removeChild(defsNode);
+    const filterNode = document.getElementById("vp-filter-defs");
+    if (filterNode) {
+      filterNode.parentNode.removeChild(filterNode);
     }
     this.clearSelection();
     super.destroy();
   }
 
   public clearSelection() {
-    const diagram = this.context.diagram;
-
     const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
     if (selectedShape) {
-      if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
+      if (this.enableBoxSelection) {
         this.deselectBox();
       } else {
         selectedShape.removeAttribute('filter');
@@ -120,7 +134,7 @@ export class SelectionService extends BasicService implements ISelectionService 
       const shapeToSelect = Utils.findTargetElement(shapeId, this.context);
       if (shapeToSelect) {
         const selectionView = diagram.selectionView;
-        if (selectionView?.enableBoxSelection) {
+        if (this.enableBoxSelection) {
 
           this.deselectBox();
 
