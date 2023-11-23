@@ -17,39 +17,45 @@ export class SelectionService extends BasicService implements ISelectionService 
 
   constructor(context: ISvgPublishContext) {
     super(context);
+    this.reset();
+  }
 
+  public reset() {
     const diagram = this.context.diagram;
 
-    if (diagram.enableSelection) {
+    SvgFilters.createFilterNode(this.context.svg, "vp-filter-select", {
+      blur: diagram.selectionView?.blur || 2,
+      dilate: diagram.selectionView?.dilate || 2,
+      enableBlur: !!diagram.selectionView?.enableBlur,
+      enableDilate: !!diagram.selectionView?.enableDilate,
+      mode: diagram.selectionView?.mode || "normal",
+      color: diagram.selectionView.selectColor ?? "rgba(255, 255, 0, 0.4)"
+    });
 
-      const defsNode = SvgFilters.createFilterDefs(diagram.selectionView);
-      context.svg.appendChild(defsNode);
+    const clearSelection = (evt: MouseEvent) => {
+      evt.stopPropagation();
+      this.setSelection(null, evt);
+    }
 
-      const clearSelection = (evt: MouseEvent) => {
-        evt.stopPropagation();
-        this.setSelection(null, evt);
-      }
+    this.subscribe(this.context.svg, 'click', clearSelection);
 
-      this.subscribe(this.context.svg, 'click', clearSelection);
+    for (const shapeId in diagram.shapes) {
 
-      for (const shapeId in diagram.shapes) {
+      const info = diagram.shapes[shapeId];
+      if (Utils.isShapeInteractive(info)) {
 
-        const info = diagram.shapes[shapeId];
-        if (Utils.isShapeInteractive(info)) {
+        const shape = Utils.findTargetElement(shapeId, this.context);
+        if (!shape)
+          return;
 
-          const shape = Utils.findTargetElement(shapeId, context);
-          if (!shape)
-            return;
+        shape.style.cursor = 'pointer';
 
-          shape.style.cursor = 'pointer';
-
-          const setSelection = (evt: MouseEvent) => {
-            evt.stopPropagation();
-            this.setSelection(shapeId, evt);
-          }
-
-          this.subscribe(shape, 'click', setSelection);
+        const setSelection = (evt: MouseEvent) => {
+          evt.stopPropagation();
+          this.setSelection(shapeId, evt);
         }
+
+        this.subscribe(shape, 'click', setSelection);
       }
     }
   }
@@ -65,22 +71,37 @@ export class SelectionService extends BasicService implements ISelectionService 
     }
   }
 
+  public destroy(): void {
+    this.deselectBox();
+    const defsNode = document.getElementById("vp-filter-defs");
+    if (defsNode) {
+      defsNode.parentNode.removeChild(defsNode);
+    }
+    this.clearSelection();
+    super.destroy();
+  }
+
+  public clearSelection() {
+    const diagram = this.context.diagram;
+
+    const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
+    if (selectedShape) {
+      if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
+        this.deselectBox();
+      } else {
+        selectedShape.removeAttribute('filter');
+      }
+    }
+
+    delete this.selectedShapeId;
+}
+
   public setSelection(shapeId: string, evt?: Event) {
 
     const diagram = this.context.diagram;
 
     if (this.selectedShapeId && this.selectedShapeId !== shapeId) {
-
-      const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
-      if (selectedShape) {
-        if (diagram.selectionView && diagram.selectionView.enableBoxSelection) {
-          this.deselectBox();
-        } else {
-          selectedShape.removeAttribute('filter');
-        }
-      }
-
-      delete this.selectedShapeId;
+      this.clearSelection();
     }
 
     if (!this.selectedShapeId || this.selectedShapeId !== shapeId) {
@@ -113,7 +134,7 @@ export class SelectionService extends BasicService implements ISelectionService 
           const box = SvgFilters.createSelectionBox("vp-selection-box", rect, options);
           shapeToSelect.appendChild(box);
         } else {
-          shapeToSelect.setAttribute('filter', 'url(#select)');
+          shapeToSelect.setAttribute('filter', 'url(#vp-filter-select)');
         }
       }
     }

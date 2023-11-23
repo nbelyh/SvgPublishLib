@@ -73,23 +73,30 @@ export class SvgFilters {
     return box;
   }
 
-  public static createFilterDefs(selectionView: ISelectionViewOptions) {
-    const defsNode = document.createElementNS(SVGNS, "defs");
-    const options = {
-      dilate: selectionView.dilate,
-      enableDilate: selectionView.enableDilate,
-      blur: selectionView.blur,
-      enableBlur: selectionView.enableBlur,
-      mode: selectionView.mode
-    };
-    defsNode.appendChild(this.createFilterNode("hover", { ...options, color: selectionView.hoverColor }));
-    defsNode.appendChild(this.createFilterNode("select", { ...options, color: selectionView.selectColor }));
-    defsNode.appendChild(this.createFilterNode("hyperlink", { ...options, color: selectionView.hyperlinkColor }));
+  public static createFilterDefs(svg: SVGSVGElement) {
+    let defsNode: SVGDefsElement = svg.getElementById(`vp-filter-defs`) as any;
+    if (!defsNode) {
+      defsNode = document.createElementNS(SVGNS, "defs");
+      svg.appendChild(defsNode);
+    }
     return defsNode;
   }
 
-  public static createFilterNode(id: string, options: { dilate: number; enableDilate: boolean; blur: number; enableBlur: boolean; color: string, mode: string }) {
-    const filterNode = document.createElementNS(SVGNS, "filter");
+  public static createFilterNode(svg: SVGSVGElement, id: string, options: {
+    dilate: number;
+    enableDilate: boolean;
+    blur: number;
+    enableBlur: boolean;
+    color: string,
+    mode: string
+  }) {
+
+    let filterNode = document.getElementById(id) as any;
+    if (filterNode) {
+      filterNode.parentNode.removeChild(filterNode);
+    }
+
+    filterNode = document.createElementNS(SVGNS, "filter");
     filterNode.setAttribute('id', id);
 
     if (options.enableDilate) {
@@ -124,6 +131,7 @@ export class SvgFilters {
 
     filterNode.appendChild(feBlend);
 
-    return filterNode;
+    const defsNode = this.createFilterDefs(svg);
+    defsNode.appendChild(filterNode);
   }
 }
