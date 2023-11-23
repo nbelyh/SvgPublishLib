@@ -66,17 +66,17 @@ export class SvgPublishContext implements ISvgPublishContext {
   }
 
   private destroyService(name: keyof IServices) {
-    if (this.services[name]) {
-      this.services[name].destroy();
-      delete this.services[name];
-    }
+    this.services[name].destroy();
+    delete this.services[name];
   }
 
   public enableService(name: keyof IServices, enable: boolean) {
-    if (enable) {
+    if (enable && !this.services[name]) {
       this.services[name] = this.createService(name) as any;
-    } else {
+    } else if (!enable && this.services[name]) {
       this.destroyService(name);
+    } else {
+      console.warn(`Service ${name} is already ${enable ? 'enabled' : 'disabled'}.`);
     }
   }
 }

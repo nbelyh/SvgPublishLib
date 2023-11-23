@@ -13,31 +13,50 @@ import { DefaultColors } from './Constants';
 
 export class HoverService extends BasicService implements IHoverService {
 
+  private enableBoxSelection: boolean = false;
+
   constructor(context: ISvgPublishContext) {
     super(context);
     this.reset();
   }
 
+  public destroy(): void {
+    const hoverFilterNode = document.getElementById("vp-filter-hover");
+    if (hoverFilterNode) {
+      hoverFilterNode.parentNode.removeChild(hoverFilterNode);
+    }
+    const hyperlinkFilterNode = document.getElementById("vp-filter-hyperlink");
+    if (hyperlinkFilterNode) {
+      hyperlinkFilterNode.parentNode.removeChild(hyperlinkFilterNode);
+    }
+    super.destroy();
+  }
+
   public reset() {
 
+    super.unsubscribe();
+
     const diagram = this.context.diagram;
+    const selectionView = diagram?.selectionView;
+
+    this.enableBoxSelection = !!selectionView?.enableBoxSelection;
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hover", {
-      blur: diagram.selectionView?.blur || 2,
-      dilate: diagram.selectionView?.dilate || 2,
-      enableBlur: !!diagram.selectionView?.enableBlur,
-      enableDilate: !!diagram.selectionView?.enableDilate,
-      mode: diagram.selectionView?.mode || "normal",
-      color: diagram.selectionView.hoverColor ?? DefaultColors.hover
+      blur: selectionView?.blur || 2,
+      dilate: selectionView?.dilate || 2,
+      enableBlur: !!selectionView?.enableBlur,
+      enableDilate: !!selectionView?.enableDilate,
+      mode: selectionView?.mode || "normal",
+      color: selectionView?.hoverColor ?? DefaultColors.hover
     });
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hyperlink", {
-      blur: diagram.selectionView?.blur || 2,
-      dilate: diagram.selectionView?.dilate || 2,
-      enableBlur: !!diagram.selectionView?.enableBlur,
-      enableDilate: !!diagram.selectionView?.enableDilate,
-      mode: diagram.selectionView?.mode || "normal",
-      color: diagram.selectionView.hyperlinkColor ?? DefaultColors.hyperlink
+      blur: selectionView?.blur || 2,
+      dilate: selectionView?.dilate || 2,
+      enableBlur: !!selectionView?.enableBlur,
+      enableDilate: !!selectionView?.enableDilate,
+      mode: selectionView?.mode || "normal",
+      color: selectionView?.hyperlinkColor ?? DefaultColors.hyperlink
     });
 
     for (const shapeId in diagram.shapes) {
@@ -49,8 +68,7 @@ export class HoverService extends BasicService implements IHoverService {
           continue;
 
         // hover support
-        const selectionView = diagram.selectionView;
-        if (selectionView?.enableBoxSelection) {
+        if (this.enableBoxSelection) {
 
           const hyperlinkColor = selectionView.hyperlinkColor || DefaultColors.hyperlink;
           const hoverColor = selectionView.hoverColor || DefaultColors.hover;
