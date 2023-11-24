@@ -9,7 +9,7 @@ import { BasicService } from './BasicService';
 import { IHoverService } from '../interfaces/IHoverService';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
-import { DefaultColors } from './Constants';
+import { Defaults } from './Defaults';
 
 export class HoverService extends BasicService implements IHoverService {
 
@@ -39,24 +39,18 @@ export class HoverService extends BasicService implements IHoverService {
     const diagram = this.context.diagram;
     const selectionView = diagram?.selectionView;
 
-    this.enableBoxSelection = !!selectionView?.enableBoxSelection;
+    this.enableBoxSelection = Utils.getValueOrDefault(selectionView?.enableBoxSelection, false);
+
+    const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hover", {
-      blur: selectionView?.blur || 2,
-      dilate: selectionView?.dilate || 2,
-      enableBlur: !!selectionView?.enableBlur,
-      enableDilate: !!selectionView?.enableDilate,
-      mode: selectionView?.mode || "normal",
-      color: selectionView?.hoverColor ?? DefaultColors.hover
+      ...svgFilterDefaults,
+      color: Utils.getValueOrDefault(selectionView?.hoverColor, Defaults.hoverColor)
     });
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-hyperlink", {
-      blur: selectionView?.blur || 2,
-      dilate: selectionView?.dilate || 2,
-      enableBlur: !!selectionView?.enableBlur,
-      enableDilate: !!selectionView?.enableDilate,
-      mode: selectionView?.mode || "normal",
-      color: selectionView?.hyperlinkColor ?? DefaultColors.hyperlink
+      ...svgFilterDefaults,
+      color: Utils.getValueOrDefault(selectionView?.hyperlinkColor, Defaults.hyperlinkColor)
     });
 
     for (const shapeId in diagram.shapes) {
@@ -70,8 +64,8 @@ export class HoverService extends BasicService implements IHoverService {
         // hover support
         if (this.enableBoxSelection) {
 
-          const hyperlinkColor = selectionView.hyperlinkColor || DefaultColors.hyperlink;
-          const hoverColor = selectionView.hoverColor || DefaultColors.hover;
+          const hyperlinkColor = selectionView.hyperlinkColor || Defaults.hyperlinkColor;
+          const hoverColor = selectionView.hoverColor || Defaults.hoverColor;
 
           var rect = shape.getBBox();
           const options = {

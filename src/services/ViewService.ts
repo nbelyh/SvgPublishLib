@@ -9,14 +9,12 @@ import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { Geometry } from './Geometry';
 import { BasicService } from './BasicService';
 import { IViewService } from '../interfaces/IViewService';
+import { Utils } from './Utils';
 
 export class ViewService extends BasicService implements IViewService {
 
   private viewPort: SVGGElement = null;
   private viewBox: string;
-
-  private enableZoom = true; // 1 or 0: enable or disable zooming (default enabled)
-  private enablePan = true;
 
   private zoomScale = 0.5; // Zoom sensitivity
   private panDelta = 3; // start pan on move
@@ -72,13 +70,15 @@ export class ViewService extends BasicService implements IViewService {
 
     svgElement.appendChild(group);
     return group;
-}
+  }
 
-  public isPanEnabled() { return this.enablePan; }
-  public setPanEnabled(val: boolean) { this.enablePan = val; }
+  private get enableZoom() {
+    return Utils.getValueOrDefault(this.context?.diagram?.enableZoom, true);
+  }
 
-  public isZoomEnabled() { return this.enableZoom; }
-  public setZoomEnabled(val: boolean) { this.enableZoom = val; }
+  private get enablePan() {
+    return Utils.getValueOrDefault(this.context?.diagram?.enablePan, true);
+  }
 
   private subscribeAll() {
     const container = this.context.container;
@@ -225,9 +225,9 @@ export class ViewService extends BasicService implements IViewService {
     if (!this.enableZoom)
       return;
 
-    if (this.context.diagram.enableZoomCtrl && !evt.ctrlKey)
+    if (this.context?.diagram?.enableZoomCtrl && !evt.ctrlKey)
       return;
-    if (this.context.diagram.enableZoomShift && !evt.shiftKey)
+    if (this.context?.diagram?.enableZoomShift && !evt.shiftKey)
       return;
 
     evt.preventDefault();

@@ -10,7 +10,7 @@ import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 import { BasicService } from './BasicService';
 import { ISelectionService } from '../interfaces/ISelectionService';
-import { DefaultColors } from './Constants';
+import { Defaults } from './Defaults';
 
 export class SelectionService extends BasicService implements ISelectionService {
 
@@ -34,15 +34,13 @@ export class SelectionService extends BasicService implements ISelectionService 
     const diagram = this.context.diagram;
     const selectionView = diagram.selectionView;
 
-    this.enableBoxSelection = !!selectionView?.enableBoxSelection;
+    this.enableBoxSelection = Utils.getValueOrDefault(selectionView?.enableBoxSelection, false);
+
+    const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
 
     SvgFilters.createFilterNode(this.context.svg, "vp-filter-select", {
-      blur: selectionView?.blur || 2,
-      dilate: selectionView?.dilate || 2,
-      enableBlur: !!selectionView?.enableBlur,
-      enableDilate: !!selectionView?.enableDilate,
-      mode: selectionView?.mode || "normal",
-      color: selectionView?.selectColor ?? DefaultColors.selection
+      ...svgFilterDefaults,
+      color: selectionView?.selectColor ?? Defaults.selectionColor
     });
 
     const clearSelection = (evt: MouseEvent) => {
@@ -140,7 +138,7 @@ export class SelectionService extends BasicService implements ISelectionService 
 
           const rect = shapeToSelect.getBBox();
           const options = {
-            color: selectionView.selectColor || DefaultColors.selection,
+            color: selectionView.selectColor || Defaults.selectionColor,
             dilate: selectionView.dilate || 4,
             enableDilate: selectionView.enableDilate,
             mode: selectionView.mode
