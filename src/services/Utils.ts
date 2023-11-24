@@ -16,6 +16,10 @@ export class Utils {
       || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
   }
 
+  public static getValueOrDefault<T>(val: T, def: T) {
+    return typeof val === 'undefined' ? def : val;
+  }
+
   public static findTargetElement(id: string, context: ISvgPublishContext): SVGGElement {
 
     const elt = context.svg.getElementById(id);
