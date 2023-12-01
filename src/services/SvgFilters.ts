@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ISelectionViewOptions } from '../interfaces/ISelectionViewOptions';
+import { Defaults } from './Defaults';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
@@ -110,16 +110,7 @@ export class SvgFilters {
     return box;
   }
 
-  public static createFilterDefs(svg: SVGSVGElement) {
-    let defsNode: SVGDefsElement = svg.getElementById(`vp-filter-defs`) as any;
-    if (!defsNode) {
-      defsNode = document.createElementNS(SVGNS, "defs");
-      svg.appendChild(defsNode);
-    }
-    return defsNode;
-  }
-
-  public static createFilterNode(svg: SVGSVGElement, id: string, options: {
+  public static createFilterNode(svg: SVGSVGElement, guid: string, id: string, options: {
     dilate: number;
     enableDilate: boolean;
     blur: number;
@@ -168,7 +159,13 @@ export class SvgFilters {
 
     filterNode.appendChild(feBlend);
 
-    const defsNode = this.createFilterDefs(svg);
+    const defsId = Defaults.getFilterDefsId(guid);
+    let defsNode: SVGDefsElement = svg.getElementById(defsId) as any;
+    if (!defsNode) {
+      defsNode = document.createElementNS(SVGNS, "defs");
+      defsNode.id = defsId;
+      svg.appendChild(defsNode);
+    }
     defsNode.appendChild(filterNode);
   }
 }

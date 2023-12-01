@@ -38,7 +38,7 @@ export class SelectionService extends BasicService implements ISelectionService 
 
     const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
 
-    SvgFilters.createFilterNode(this.context.svg, "vp-filter-select", {
+    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getSelectionFilterId(this.context.guid), {
       ...svgFilterDefaults,
       color: selectionView?.selectColor ?? Defaults.selectionColor
     });
@@ -76,11 +76,11 @@ export class SelectionService extends BasicService implements ISelectionService 
   }
 
   private deselectBox() {
-    const hoverBox = document.getElementById("vp-hover-box");
+    const hoverBox = document.getElementById(Defaults.getHoverBoxId(this.context.guid));
     if (hoverBox) {
       hoverBox.parentNode.removeChild(hoverBox);
     }
-    const selectionBox = document.getElementById("vp-selection-box");
+    const selectionBox = document.getElementById(Defaults.getSelectionBoxId(this.context.guid));
     if (selectionBox) {
       selectionBox.parentNode.removeChild(selectionBox);
     }
@@ -144,10 +144,10 @@ export class SelectionService extends BasicService implements ISelectionService 
             mode: selectionView.mode
           };
 
-          const box = SvgFilters.createSelectionBox("vp-selection-box", rect, options);
+          const box = SvgFilters.createSelectionBox(Defaults.getSelectionBoxId(this.context.guid), rect, options);
           shapeToSelect.appendChild(box);
         } else {
-          shapeToSelect.setAttribute('filter', 'url(#vp-filter-select)');
+          shapeToSelect.setAttribute('filter', `url(#${Defaults.getSelectionFilterId(this.context.guid)})`);
         }
       }
     }

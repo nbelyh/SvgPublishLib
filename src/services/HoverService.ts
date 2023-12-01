@@ -21,11 +21,11 @@ export class HoverService extends BasicService implements IHoverService {
   }
 
   public destroy(): void {
-    const hoverFilterNode = document.getElementById("vp-filter-hover");
+    const hoverFilterNode = document.getElementById(Defaults.getHoverFilterId(this.context.guid));
     if (hoverFilterNode) {
       hoverFilterNode.parentNode.removeChild(hoverFilterNode);
     }
-    const hyperlinkFilterNode = document.getElementById("vp-filter-hyperlink");
+    const hyperlinkFilterNode = document.getElementById(Defaults.getHyperlinkFilterId(this.context.guid));
     if (hyperlinkFilterNode) {
       hyperlinkFilterNode.parentNode.removeChild(hyperlinkFilterNode);
     }
@@ -43,12 +43,12 @@ export class HoverService extends BasicService implements IHoverService {
 
     const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
 
-    SvgFilters.createFilterNode(this.context.svg, "vp-filter-hover", {
+    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getHoverFilterId(this.context.guid), {
       ...svgFilterDefaults,
       color: Utils.getValueOrDefault(selectionView?.hoverColor, Defaults.hoverColor)
     });
 
-    SvgFilters.createFilterNode(this.context.svg, "vp-filter-hyperlink", {
+    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getHyperlinkFilterId(this.context.guid), {
       ...svgFilterDefaults,
       color: Utils.getValueOrDefault(selectionView?.hyperlinkColor, Defaults.hyperlinkColor)
     });
@@ -76,7 +76,7 @@ export class HoverService extends BasicService implements IHoverService {
             mode: selectionView.mode
           };
 
-          const box = SvgFilters.createSelectionBox("vp-hover-box", rect, options);
+          const box = SvgFilters.createSelectionBox(Defaults.getHoverBoxId(this.context.guid), rect, options);
 
           const onMouseOver = () => {
             if (this.context.services.selection?.selectedShapeId !== shapeId) {
@@ -86,7 +86,7 @@ export class HoverService extends BasicService implements IHoverService {
 
           const onMouseOut = () => {
             if (this.context.services.selection?.selectedShapeId !== shapeId) {
-              var box = document.getElementById("vp-hover-box");
+              var box = document.getElementById(Defaults.getHoverBoxId(this.context.guid));
               if (box) {
                 box.parentNode.removeChild(box);
               }
@@ -97,7 +97,9 @@ export class HoverService extends BasicService implements IHoverService {
           this.subscribe(shape, 'mouseout', onMouseOut);
         } else {
 
-          const filter = (diagram.enableFollowHyperlinks && info.DefaultLink) ? 'url(#vp-filter-hyperlink)' : 'url(#vp-filter-hover)';
+          const filter = (diagram.enableFollowHyperlinks && info.DefaultLink)
+            ? `url(#${Defaults.getHyperlinkFilterId(this.context.guid)})`
+            : `url(#${Defaults.getHoverFilterId(this.context.guid)})`;
 
           const onMouseOver = () => {
             if (this.context.services.selection?.selectedShapeId !== shapeId)

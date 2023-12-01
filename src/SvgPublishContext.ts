@@ -7,6 +7,7 @@ import { HashService } from './services/HashService';
 import { IDiagramInfo } from './interfaces/IDiagramInfo';
 import { IServices } from './interfaces/IServices';
 import { VisioSvgParser } from './services/VisioSvgParser';
+import { Utils } from './services/Utils';
 
 export class SvgPublishContext implements ISvgPublishContext {
 
@@ -15,6 +16,7 @@ export class SvgPublishContext implements ISvgPublishContext {
   events: EventTarget;
   diagram: IDiagramInfo;
   services: IServices;
+  guid: string;
 
   public constructor(container: HTMLElement, content: string, init?: Partial<IDiagramInfo>) {
 
@@ -22,6 +24,7 @@ export class SvgPublishContext implements ISvgPublishContext {
 
     container.innerHTML = svgXml;
 
+    this.guid = Utils.generateUniqueId();
     this.container = container;
     this.svg = container.querySelector('svg');
     this.events = new EventTarget;

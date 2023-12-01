@@ -9,6 +9,10 @@ import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 
 export class Utils {
 
+  public static generateUniqueId() {
+    return Math.random().toString(36).substring(2, 9)
+  }
+
   public static isShapeInteractive(shape: IShapeInfo) {
     return shape.DefaultLink
       || shape.Props && Object.keys(shape.Props).length

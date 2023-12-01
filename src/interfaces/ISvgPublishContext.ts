@@ -9,6 +9,7 @@ import { IServices } from './IServices';
 
 export interface ISvgPublishContext {
   container: HTMLElement;
+  guid: string;
   svg: SVGSVGElement;
   events: EventTarget;
   diagram: IDiagramInfo;
