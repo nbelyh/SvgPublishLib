@@ -4,7 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { ViewChangedEvent } from '../events';
+import { IViewChangedEventData, ViewChangedEvent } from '../events';
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { Geometry } from './Geometry';
 import { BasicService } from './BasicService';
@@ -65,7 +65,7 @@ export class ViewService extends BasicService implements IViewService {
     const group = document.createElementNS(svgNS, 'g');
 
     while (svgElement.firstChild) {
-        group.appendChild(svgElement.firstChild);
+      group.appendChild(svgElement.firstChild);
     }
 
     svgElement.appendChild(group);
@@ -86,7 +86,7 @@ export class ViewService extends BasicService implements IViewService {
 
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    this.subscribe(container, "mousedown", this.handleMouseDown, { passive: false});
+    this.subscribe(container, "mousedown", this.handleMouseDown, { passive: false });
     this.subscribe(container, "mouseup", this.handleMouseUp);
     this.subscribe(container, "mousemove", this.handleMouseMove, { passive: false });
 
@@ -209,9 +209,12 @@ export class ViewService extends BasicService implements IViewService {
 
     this.viewPort.setAttribute("transform", s);
 
-    const viewChangedEvent = new ViewChangedEvent({
-      context: this.context,
-      triggerEvent: evt
+    const viewChangedEvent = new CustomEvent<IViewChangedEventData>('viewChanged', {
+      cancelable: false,
+      detail: {
+        context: this.context,
+        triggerEvent: evt
+      }
     });
     this.context.events.dispatchEvent(viewChangedEvent);
   }
