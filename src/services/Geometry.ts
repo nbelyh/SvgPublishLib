@@ -9,16 +9,16 @@ export class Geometry {
   /*
 
   */
-  public static makeClientPoint = (pageX: number, pageY: number) => {
-    return { pageX, pageY };
+  public static makeClientPoint = (clientX: number, clientY: number) => {
+    return { clientX, clientY };
   };
 
   /*
       compute geometric distance between points
   */
   public static diff = (pt1, pt2) => {
-    const dx = pt1.pageX - pt2.pageX;
-    const dy = pt1.pageY - pt2.pageY;
+    const dx = pt1.clientX - pt2.clientX;
+    const dy = pt1.clientY - pt2.clientY;
     return Math.sqrt(dx * dx + dy * dy);
   };
 

@@ -21,7 +21,7 @@ export class ViewService extends BasicService implements IViewService {
 
   private state: 'pinch' | 'pan' | 'down' = null;
   private stateOriginSvg: DOMPoint = null;
-  private stateOriginClient: { pageX: number, pageY: number } = null;
+  private stateOriginClient: { clientX: number, clientY: number } = null;
   private stateTf: DOMMatrix = null;
   private stateDiff: number = null;
 
@@ -152,21 +152,21 @@ export class ViewService extends BasicService implements IViewService {
     return pt;
   }
 
-  private getEventClientPoint(evt) {
+  private getEventClientPoint(evt: MouseEvent | TouchEvent) {
 
-    const touches = evt.touches;
-
+    const touches = evt['touches'] as TouchList;
     if (touches && touches.length === 2) {
 
-      const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
-      const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
+      const pt1 = Geometry.makeClientPoint(touches[0].clientX, touches[0].clientY);
+      const pt2 = Geometry.makeClientPoint(touches[1].clientX, touches[1].clientY);
 
-      return Geometry.makeClientPoint((pt1.pageX + pt2.pageX) / 2, (pt1.pageY + pt2.pageY) / 2);
+      return Geometry.makeClientPoint((pt1.clientX + pt2.clientX) / 2, (pt1.clientY + pt2.clientY) / 2);
 
     } else if (touches && touches.length === 1) {
-      return Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
+      return Geometry.makeClientPoint(touches[0].clientX, touches[0].clientY);
     } else {
-      return Geometry.makeClientPoint(evt.pageX, evt.pageY);
+      const mouseEvt = evt as MouseEvent;
+      return Geometry.makeClientPoint(mouseEvt.clientX, mouseEvt.clientY);
     }
   }
 
@@ -178,8 +178,8 @@ export class ViewService extends BasicService implements IViewService {
     const p = this.context.svg.createSVGPoint();
 
     const box = this.context.container.getBoundingClientRect();
-    p.x = clientPoint.pageX - box.left;
-    p.y = clientPoint.pageY - box.top;
+    p.x = clientPoint.clientX - box.left;
+    p.y = clientPoint.clientY - box.top;
 
     return p;
   }
@@ -247,7 +247,7 @@ export class ViewService extends BasicService implements IViewService {
       zoom with given aspect at given (client) point
   */
 
-  public zoom(z: number, evt?: MouseEvent) {
+  public zoom(z: number, evt?: MouseEvent | TouchEvent) {
 
     const evtPt = evt
       ? this.getSvgClientPoint(this.getEventClientPoint(evt))
@@ -270,7 +270,7 @@ export class ViewService extends BasicService implements IViewService {
           continue pan (one touch or mouse) or pinch (with two touches)
   */
 
-  private handleMouseMove = (evt) => {
+  private handleMouseMove = (evt: MouseEvent | TouchEvent) => {
 
     if (!this.state)
       return;
@@ -283,11 +283,11 @@ export class ViewService extends BasicService implements IViewService {
 
     if (this.state === 'pinch') {
 
-      const touches = evt.touches;
+      const touches = evt['touches'] as TouchList;
       if (touches && touches.length === 2) {
 
-        const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
-        const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
+        const pt1 = Geometry.makeClientPoint(touches[0].clientX, touches[0].clientY);
+        const pt2 = Geometry.makeClientPoint(touches[1].clientX, touches[1].clientY);
 
         const currentDiff = Geometry.diff(pt1, pt2);
 
@@ -338,8 +338,8 @@ export class ViewService extends BasicService implements IViewService {
 
     if (touches && touches.length === 2) {
 
-      const pt1 = Geometry.makeClientPoint(touches[0].pageX, touches[0].pageY);
-      const pt2 = Geometry.makeClientPoint(touches[1].pageX, touches[1].pageY);
+      const pt1 = Geometry.makeClientPoint(touches[0].clientX, touches[0].clientY);
+      const pt2 = Geometry.makeClientPoint(touches[1].clientX, touches[1].clientY);
 
       this.stateDiff = Geometry.diff(pt1, pt2);
 
