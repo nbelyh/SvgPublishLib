@@ -9,59 +9,71 @@ import { ILinkInfo } from "../interfaces/ILinkInfo";
 import { LinkClickedEvent } from '../events';
 import { Utils } from './Utils';
 import { BasicService } from './BasicService';
+import { ILinksService } from '../interfaces/ILinksService';
 
-export class LinksService extends BasicService {
+export class LinksService extends BasicService implements ILinksService {
 
   constructor(context: ISvgPublishContext) {
     super(context);
+    this.reset();
+  }
 
-    const diagram = context.diagram;
+  public reset() {
 
-    // if (diagram.enableLinks)
-    //     diagram.selectionChanged.add(showShapeLinks);
+    super.unsubscribe();
+
+    const diagram = this.context.diagram;
 
     if (!diagram.enableFollowHyperlinks)
       return;
 
+    // if (diagram.enableLinks)
+    //     diagram.selectionChanged.add(showShapeLinks);
+
+    const onClick = (evt: PointerEvent) => {
+      evt.stopPropagation();
+
+      const target = evt.currentTarget as SVGElement;
+      const shape = diagram.shapes[target.id];
+      const defaultLink = shape.DefaultLink && shape.Links[shape.DefaultLink - 1];
+      const defaultLinkHref = defaultLink && this.buildDefaultHref(defaultLink);
+
+      const openHyperlinksInNewWindow = Utils.getValueOrDefault(diagram.openHyperlinksInNewWindow, true);
+
+      const linkClickedEvent = new LinkClickedEvent({
+        context: this.context,
+        triggerEvent: evt,
+        shape,
+        link: defaultLink,
+        href: defaultLinkHref,
+        target: (defaultLink.Address && (openHyperlinksInNewWindow || evt.shiftKey)) ? '_blank' : undefined
+      });
+
+      if (!this.context.events.dispatchEvent(linkClickedEvent))
+        return;
+
+      if (evt && evt.ctrlKey)
+        return;
+
+      if (linkClickedEvent.args.target)
+        window.open(linkClickedEvent.args.href, "_blank");
+      else
+        document.location = linkClickedEvent.args.href;
+    };
+
     for (const shapeId in diagram.shapes) {
 
-      const info = diagram.shapes[shapeId];
+      const shape = diagram.shapes[shapeId];
+      const defaultLink = shape.DefaultLink && shape.Links[shape.DefaultLink - 1];
+      const defaultLinkHref = defaultLink && this.buildDefaultHref(defaultLink);
 
-      const defaultlink = info.DefaultLink && info.Links[info.DefaultLink - 1];
-      const defaultHref = defaultlink && this.buildDefaultHref(defaultlink);
+      if (defaultLinkHref) {
 
-      if (defaultHref) {
-
-        var target = Utils.findTargetElement(shapeId, context);
+        var target = Utils.findTargetElement(shapeId, this.context);
         if (!target)
           return;
 
         target.style.cursor = 'pointer';
-
-        const onClick = (evt: PointerEvent) => {
-          evt.stopPropagation();
-
-          const linkClickedEvent = new LinkClickedEvent({
-            context: this.context,
-            triggerEvent: evt,
-            shape: info,
-            link: defaultlink,
-            href: defaultHref,
-            target: (defaultlink.Address && diagram.openHyperlinksInNewWindow || evt.shiftKey) ? '_blank' : undefined
-          });
-
-          if (!context.events.dispatchEvent(linkClickedEvent))
-            return;
-
-          if (evt && evt.ctrlKey)
-            return;
-
-          if (linkClickedEvent.args.target)
-            window.open(linkClickedEvent.args.href, "_blank");
-          else
-            document.location = linkClickedEvent.args.href;
-        };
-
         this.subscribe(target, 'click', onClick);
       }
     }

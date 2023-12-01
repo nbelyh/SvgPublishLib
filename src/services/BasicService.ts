@@ -16,6 +16,9 @@ export class BasicService implements IBasicService {
     this.context = context;
   }
 
+  public reset() {
+  }
+
   protected subscribe(target: Element | Window, name: string, handler: (evt: Event) => void, options?: boolean | AddEventListenerOptions) {
     target.addEventListener(name, handler, options);
     this.unsubscribeList.push(() => target.removeEventListener(name, handler));
