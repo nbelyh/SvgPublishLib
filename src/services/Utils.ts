@@ -9,11 +9,14 @@ import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 
 export class Utils {
 
-  public static isShapeInteractive(info: IShapeInfo) {
-    return info.DefaultLink
-      || info.Props && Object.keys(info.Props).length
-      || info.Links && info.Links.length
-      || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
+  public static isShapeInteractive(shape: IShapeInfo) {
+    return shape.DefaultLink
+      || shape.Props && Object.keys(shape.Props).length
+      || shape.Links && shape.Links.length
+      || shape.Comment
+      || shape.PopoverMarkdown
+      || shape.SidebarMarkdown
+      || shape.TooltipMarkdown
   }
 
   public static getValueOrDefault<T>(val: T, def: T) {

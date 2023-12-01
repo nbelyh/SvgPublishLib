@@ -10,6 +10,9 @@ export class HashService extends BasicService implements IHashService {
     this.processHash();
   }
 
+  public reset() {
+  }
+
   public static getUrlParameter(name: string) {
     const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
     const results = regex.exec(location.hash);

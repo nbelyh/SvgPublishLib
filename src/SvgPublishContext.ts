@@ -35,7 +35,7 @@ export class SvgPublishContext implements ISvgPublishContext {
       this.enableService('selection', true);
     }
 
-    if (this.diagram.enableLinks) {
+    if (this.diagram.enableFollowHyperlinks) {
       this.enableService('links', true);
     }
 

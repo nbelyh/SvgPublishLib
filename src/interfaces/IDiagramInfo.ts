@@ -23,22 +23,22 @@ export interface IDiagramInfo {
 
   fileName: string;
   urlPrefix: string;
-  markOfTheWeb: boolean;
-  twoFingersTouch: boolean;
-  enableAutoFrameHeight: boolean;
-  safariFullscreen: boolean;
-  enablePages: boolean;
-  enablePageLookup: boolean;
-  enablePageSort: boolean;
-  enableZoomShift: boolean;
-  enableZoomCtrl: boolean;
 
-  enableProps: boolean;
-  enableLinks: boolean;
-  enableFollowHyperlinks: boolean;
-  enableSelection: boolean;
-  enableLayers: boolean;
-  enableTooltips: boolean;
+  twoFingersTouch?: boolean;
+  enableAutoFrameHeight?: boolean;
+  safariFullscreen?: boolean;
+  enablePages?: boolean;
+  enablePageLookup?: boolean;
+  enablePageSort?: boolean;
+  enableZoomShift?: boolean;
+  enableZoomCtrl?: boolean;
+
+  enableProps?: boolean;
+  enableLinks?: boolean;
+
+  enableSelection?: boolean;
+  enableLayers?: boolean;
+  enableTooltips?: boolean;
 
   enableSidebar: boolean;
 
@@ -49,8 +49,8 @@ export interface IDiagramInfo {
   enableMustache: boolean;
   enableMarked: boolean;
 
-  followHyperlinks: boolean;
-  openHyperlinksInNewWindow: boolean;
+  enableFollowHyperlinks?: boolean;
+  openHyperlinksInNewWindow?: boolean;
   transformVisioFileLinks: boolean;
 
   useReadablePageNames: boolean;
@@ -84,40 +84,38 @@ export interface IDiagramInfo {
   enableContentMarkdown: boolean;
   contentMarkdown: string;
 
-  tooltipLocationOption: string;
-  popoverLocationOption: string;
-
   startPageId: number;
 
   tooltipTriggerOption: string;
   tooltipTimeout: number;
   tooltipTimeoutShow: number;
   tooltipTimeoutHide: number;
+  tooltipLocationOption: string;
+  tooltipUseMousePosition?: boolean;
+  tooltipOutsideClick: boolean;
 
   sidebarDefaultWidth: number;
 
   popoverTriggerOption: string;
   popoverTimeout: number;
-
+  popoverLocationOption: string;
+  popoverUseMousePosition: boolean;
   popoverOutsideClick: boolean;
-  tooltipOutsideClick: boolean;
 
   tooltipKeepOnHover: boolean;
   popoverKeepOnHover: boolean;
 
   enableContainerTip: boolean;
 
-  enablePropertySearch: boolean;
-  enablePropertySearchFilter: boolean;
+  enablePropertySearch?: boolean;
+  enablePropertySearchFilter?: boolean;
 
-  popoverUseMousePosition: boolean;
-  tooltipUseMousePosition: boolean;
 
-  enableHover: boolean;
+  enableHover?: boolean;
   enableHash: boolean;
 
-  enablePan: boolean;
-  enableZoom: boolean;
+  enablePan?: boolean;
+  enableZoom?: boolean;
 
   selectionView: ISelectionViewOptions;
   layerView: ILayerViewOptions;

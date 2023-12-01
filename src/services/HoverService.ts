@@ -57,6 +57,7 @@ export class HoverService extends BasicService implements IHoverService {
 
       var info = diagram.shapes[shapeId];
       if (Utils.isShapeInteractive(info)) {
+
         const shape = Utils.findTargetElement(shapeId, this.context);
         if (!shape)
           continue;
