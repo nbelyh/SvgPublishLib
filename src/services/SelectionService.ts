@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
-import { SelectionChangedEvent } from '../events/SelectionChangedEvent';
+import { ISelectionChangedEventData, SelectionChangedEvent } from '../events/SelectionChangedEvent';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 import { BasicService } from './BasicService';
@@ -107,7 +107,7 @@ export class SelectionService extends BasicService implements ISelectionService 
     }
 
     delete this.selectedShapeId;
-}
+  }
 
   public setSelection(shapeId: string, evt?: Event) {
 
@@ -120,10 +120,13 @@ export class SelectionService extends BasicService implements ISelectionService 
     if (!this.selectedShapeId || this.selectedShapeId !== shapeId) {
 
       this.selectedShapeId = shapeId;
-      const selectionChangedEvent = new SelectionChangedEvent({
-        context: this.context,
-        triggerEvent: evt,
-        shapeId,
+      const selectionChangedEvent = new CustomEvent<ISelectionChangedEventData>('selectionChanged', {
+        cancelable: false,
+        detail: {
+          triggerEvent: evt,
+          context: this.context,
+          shapeId
+        }
       });
 
       if (!this.context.events.dispatchEvent(selectionChangedEvent))

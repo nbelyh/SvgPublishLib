@@ -8,7 +8,7 @@ import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { ILinkInfo } from '../interfaces/ILinkInfo';
 import { IShapeInfo } from '../interfaces/IShapeInfo';
 
-interface ILinkClickedEventArgs {
+export interface ILinkClickedEventData {
   context: ISvgPublishContext;
   triggerEvent: PointerEvent;
   shape: IShapeInfo;
@@ -17,12 +17,4 @@ interface ILinkClickedEventArgs {
   target: string;
 }
 
-export class LinkClickedEvent extends Event {
-
-  args?: ILinkClickedEventArgs;
-
-  constructor(args: ILinkClickedEventArgs) {
-    super('linkClicked', { cancelable: true });
-    this.args = args;
-  }
-}
+export type LinkClickedEvent = CustomEvent<ILinkClickedEventData>;

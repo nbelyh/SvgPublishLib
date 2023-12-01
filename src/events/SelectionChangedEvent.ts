@@ -6,16 +6,10 @@
 
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 
-export interface ISelectionChangedEventArgs {
+export interface ISelectionChangedEventData {
   triggerEvent: Event;
   context: ISvgPublishContext;
   shapeId: string;
 }
 
-export class SelectionChangedEvent extends Event {
-  args?: ISelectionChangedEventArgs;
-  constructor(args: ISelectionChangedEventArgs) {
-    super('selectionChanged', { cancelable: true });
-    this.args = args;
-  }
-}
+export type SelectionChangedEvent = CustomEvent<ISelectionChangedEventData>;

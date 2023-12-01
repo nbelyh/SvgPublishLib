@@ -6,7 +6,7 @@
 
 import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 import { ILinkInfo } from "../interfaces/ILinkInfo";
-import { LinkClickedEvent } from '../events';
+import { ILinkClickedEventData } from '../events';
 import { Utils } from './Utils';
 import { BasicService } from './BasicService';
 import { ILinksService } from '../interfaces/ILinksService';
@@ -40,13 +40,16 @@ export class LinksService extends BasicService implements ILinksService {
 
       const openHyperlinksInNewWindow = Utils.getValueOrDefault(diagram.openHyperlinksInNewWindow, true);
 
-      const linkClickedEvent = new LinkClickedEvent({
-        context: this.context,
-        triggerEvent: evt,
-        shape,
-        link: defaultLink,
-        href: defaultLinkHref,
-        target: (defaultLink.Address && (openHyperlinksInNewWindow || evt.shiftKey)) ? '_blank' : undefined
+      const linkClickedEvent = new CustomEvent<ILinkClickedEventData>('linkClicked', {
+        cancelable: true,
+        detail: {
+          context: this.context,
+          triggerEvent: evt,
+          shape,
+          link: defaultLink,
+          href: defaultLinkHref,
+          target: (defaultLink.Address && (openHyperlinksInNewWindow || evt.shiftKey)) ? '_blank' : undefined
+        }
       });
 
       if (!this.context.events.dispatchEvent(linkClickedEvent))
@@ -55,10 +58,10 @@ export class LinksService extends BasicService implements ILinksService {
       if (evt && evt.ctrlKey)
         return;
 
-      if (linkClickedEvent.args.target)
-        window.open(linkClickedEvent.args.href, "_blank");
+      if (linkClickedEvent.detail.target)
+        window.open(linkClickedEvent.detail.href, "_blank");
       else
-        document.location = linkClickedEvent.args.href;
+        document.location = linkClickedEvent.detail.href;
     };
 
     for (const shapeId in diagram.shapes) {
