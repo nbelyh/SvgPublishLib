@@ -6,7 +6,6 @@
 
 import { IBasicService } from '../interfaces/IBasicService';
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
-import { Utils } from './Utils';
 
 export class BasicService implements IBasicService {
 
