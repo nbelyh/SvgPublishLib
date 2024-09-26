@@ -24,9 +24,6 @@ export class LinksService extends BasicService implements ILinksService {
 
     const diagram = this.context.diagram;
 
-    if (!diagram.enableFollowHyperlinks)
-      return;
-
     // if (diagram.enableLinks)
     //     diagram.selectionChanged.add(showShapeLinks);
 
@@ -74,10 +71,14 @@ export class LinksService extends BasicService implements ILinksService {
 
         var target = Utils.findTargetElement(shapeId, this.context);
         if (!target)
-          return;
+          continue;
 
-        target.style.cursor = 'pointer';
-        this.subscribe(target, 'click', onClick);
+        if (diagram.enableFollowHyperlinks) {
+          target.style.cursor = 'pointer';
+          this.subscribe(target, 'click', onClick);
+        } else {
+          target.style.cursor = 'default';
+        }
       }
     }
   }
