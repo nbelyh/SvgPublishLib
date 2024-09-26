@@ -28,7 +28,7 @@ jobs:
 
       - name: Get published version from npm
         id: published_version
-        run: echo "published_version=$(npm view your-package-name version || echo '0.0.0')" >> $GITHUB_ENV
+        run: echo "published_version=$(npm view svgpublish version || echo '0.0.0')" >> $GITHUB_ENV
 
       - name: Compare versions and publish if newer
         run: |
