@@ -1,6 +1,6 @@
 {
   "name": "svgpublish",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "The support library for SvgPublish",
   "main": "dist/svgpublish.js",
   "module": "dist/svgpublish.js",
@@ -9,7 +9,8 @@
     "build": "webpack",
     "start": "webpack --watch",
     "clean": "rimraf dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
   "author": "Nikolay Belykh",
   "license": "ISC",
