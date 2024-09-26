@@ -22,7 +22,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
+      - name: Get current version from package.json
+        id: local_version
+        run: echo "local_version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Get published version from npm
+        id: published_version
+        run: echo "published_version=$(npm view your-package-name version || echo '0.0.0')" >> $GITHUB_ENV
+
+      - name: Compare versions and publish if newer
+        run: |
+          if [ "$local_version" != "$published_version" ]; then
+            echo "New version detected: $local_version. Publishing..."
+            npm publish --provenance --access public
+          else
+            echo "No new version. Skipping publish."
+          fi
         env:
+          local_version: ${{ env.local_version }}
+          published_version: ${{ env.published_version }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
