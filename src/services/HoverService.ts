@@ -9,7 +9,7 @@ import { BasicService } from './BasicService';
 import { IHoverService } from '../interfaces/IHoverService';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
-import { Defaults } from './Defaults';
+import { DefaultColors } from '../constants/DefaultColors';
 import { SelectionUtils } from './SelectionUtils';
 
 export class HoverService extends BasicService implements IHoverService {
@@ -52,13 +52,13 @@ export class HoverService extends BasicService implements IHoverService {
         if (shape) {
 
           var filter = (diagram.enableFollowHyperlinks && info.DefaultLink)
-            ? Defaults.getHyperlinkFilterId(this.context.guid)
-            : Defaults.getHoverFilterId(this.context.guid);
+            ? SelectionUtils.getHyperlinkFilterId(this.context.guid)
+            : SelectionUtils.getHoverFilterId(this.context.guid);
 
           this.subscribe(shape, 'mouseover', () => {
             if (!selectionService?.highlightedShapeIds?.[shapeId]) {
-              var hyperlinkColor = Utils.getValueOrDefault(selectionView?.hyperlinkColor, Defaults.hyperlinkColor);
-              var hoverColor = Utils.getValueOrDefault(selectionView?.hoverColor, Defaults.hoverColor);
+              var hyperlinkColor = Utils.getValueOrDefault(selectionView?.hyperlinkColor, DefaultColors.hyperlinkColor);
+              var hoverColor = Utils.getValueOrDefault(selectionView?.hoverColor, DefaultColors.hoverColor);
               var color = (diagram.enableFollowHyperlinks && info.DefaultLink) ? hyperlinkColor : hoverColor;
               SelectionUtils.setShapeHighlight(shape, filter, color, this.context);
             }
