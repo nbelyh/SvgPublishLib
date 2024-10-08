@@ -10,6 +10,7 @@ import { IHoverService } from '../interfaces/IHoverService';
 import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 import { Defaults } from './Defaults';
+import { SelectionUtils } from './SelectionUtils';
 
 export class HoverService extends BasicService implements IHoverService {
 
@@ -21,14 +22,7 @@ export class HoverService extends BasicService implements IHoverService {
   }
 
   public destroy(): void {
-    const hoverFilterNode = document.getElementById(Defaults.getHoverFilterId(this.context.guid));
-    if (hoverFilterNode) {
-      hoverFilterNode.parentNode.removeChild(hoverFilterNode);
-    }
-    const hyperlinkFilterNode = document.getElementById(Defaults.getHyperlinkFilterId(this.context.guid));
-    if (hyperlinkFilterNode) {
-      hyperlinkFilterNode.parentNode.removeChild(hyperlinkFilterNode);
-    }
+    SelectionUtils.destroyHoverFilters(this.context);
     super.destroy();
   }
 
@@ -38,81 +32,43 @@ export class HoverService extends BasicService implements IHoverService {
 
     const diagram = this.context.diagram;
     const selectionView = diagram?.selectionView;
+    const selectionService = this.context.services.selection;
 
-    this.enableBoxSelection = Utils.getValueOrDefault(selectionView?.enableBoxSelection, false);
-
-    const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
-
-    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getHoverFilterId(this.context.guid), {
-      ...svgFilterDefaults,
-      color: Utils.getValueOrDefault(selectionView?.hoverColor, Defaults.hoverColor)
-    });
-
-    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getHyperlinkFilterId(this.context.guid), {
-      ...svgFilterDefaults,
-      color: Utils.getValueOrDefault(selectionView?.hyperlinkColor, Defaults.hyperlinkColor)
-    });
+    SelectionUtils.createHoverFilters(this.context, selectionView);
 
     for (const shapeId in diagram.shapes) {
 
       var info = diagram.shapes[shapeId];
-      if (Utils.isShapeInteractive(info)) {
+
+      if (info.DefaultLink
+        || info.Props && Object.keys(info.Props).length
+        || info.Links?.length
+        || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
+        || diagram.selectionView?.enableNextShapeColor && info.ConnectedTo?.length
+        || diagram.selectionView?.enablePrevShapeColor && info.ConnectedFrom?.length
+      ) {
 
         const shape = Utils.findTargetElement(shapeId, this.context);
-        if (!shape)
-          continue;
+        if (shape) {
 
-        // hover support
-        if (this.enableBoxSelection) {
+          var filter = (diagram.enableFollowHyperlinks && info.DefaultLink)
+            ? Defaults.getHyperlinkFilterId(this.context.guid)
+            : Defaults.getHoverFilterId(this.context.guid);
 
-          const hyperlinkColor = selectionView.hyperlinkColor || Defaults.hyperlinkColor;
-          const hoverColor = selectionView.hoverColor || Defaults.hoverColor;
-
-          var rect = shape.getBBox();
-          const options = {
-            color: (diagram.enableFollowHyperlinks && info.DefaultLink) ? hyperlinkColor : hoverColor,
-            dilate: selectionView.dilate,
-            enableDilate: selectionView.enableDilate,
-            mode: selectionView.mode
-          };
-
-          const box = SvgFilters.createSelectionBox(Defaults.getHoverBoxId(this.context.guid), rect, options);
-
-          const onMouseOver = () => {
-            if (this.context.services.selection?.selectedShapeId !== shapeId) {
-              shape.appendChild(box);
+          this.subscribe(shape, 'mouseover', () => {
+            if (!selectionService?.highlightedShapeIds?.[shapeId]) {
+              var hyperlinkColor = Utils.getValueOrDefault(selectionView?.hyperlinkColor, Defaults.hyperlinkColor);
+              var hoverColor = Utils.getValueOrDefault(selectionView?.hoverColor, Defaults.hoverColor);
+              var color = (diagram.enableFollowHyperlinks && info.DefaultLink) ? hyperlinkColor : hoverColor;
+              SelectionUtils.setShapeHighlight(shape, filter, color, this.context);
             }
-          };
+          });
 
-          const onMouseOut = () => {
-            if (this.context.services.selection?.selectedShapeId !== shapeId) {
-              var box = document.getElementById(Defaults.getHoverBoxId(this.context.guid));
-              if (box) {
-                box.parentNode.removeChild(box);
-              }
+          this.subscribe(shape, 'mouseout', () => {
+            if (!selectionService?.highlightedShapeIds[shapeId]) {
+              SelectionUtils.removeShapeHighlight(shape, this.context);
             }
-          };
-
-          this.subscribe(shape, 'mouseover', onMouseOver);
-          this.subscribe(shape, 'mouseout', onMouseOut);
-        } else {
-
-          const filter = (diagram.enableFollowHyperlinks && info.DefaultLink)
-            ? `url(#${Defaults.getHyperlinkFilterId(this.context.guid)})`
-            : `url(#${Defaults.getHoverFilterId(this.context.guid)})`;
-
-          const onMouseOver = () => {
-            if (this.context.services.selection?.selectedShapeId !== shapeId)
-              shape.setAttribute('filter', filter);
-          };
-
-          const onMouseOut = () => {
-            if (this.context.services.selection?.selectedShapeId !== shapeId)
-              shape.removeAttribute('filter');
-          };
-
-          this.subscribe(shape, 'mouseover', onMouseOver);
-          this.subscribe(shape, 'mouseout', onMouseOut);
+          });
         }
       }
     }

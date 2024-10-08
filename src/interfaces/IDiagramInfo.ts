@@ -12,7 +12,7 @@ import { ILayerInfo } from './ILayerInfo';
 
 export interface IDiagramInfo {
 
-  shapes: IShapeInfo[];
+  shapes: { [shapeId: string] : IShapeInfo };
 
   pages: IPageInfo[];
   currentPage: IPageInfo;

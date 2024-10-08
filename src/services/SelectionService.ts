@@ -6,16 +6,16 @@
 
 import { ISvgPublishContext } from "../interfaces/ISvgPublishContext";
 import { ISelectionChangedEventData, SelectionChangedEvent } from '../events/SelectionChangedEvent';
-import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 import { BasicService } from './BasicService';
 import { ISelectionService } from '../interfaces/ISelectionService';
+import { SelectionUtils } from './SelectionUtils';
 import { Defaults } from './Defaults';
 
 export class SelectionService extends BasicService implements ISelectionService {
 
   public selectedShapeId: string = null;
-  public enableBoxSelection: boolean = false;
+  public highlightedShapeIds: { [shapeId: string]: boolean } = {};
 
   constructor(context: ISvgPublishContext) {
     super(context);
@@ -32,41 +32,34 @@ export class SelectionService extends BasicService implements ISelectionService 
     }
 
     const diagram = this.context.diagram;
-    const selectionView = diagram.selectionView;
 
-    this.enableBoxSelection = Utils.getValueOrDefault(selectionView?.enableBoxSelection, false);
+    SelectionUtils.createSelectionFilters(this.context, diagram.selectionView);
 
-    const svgFilterDefaults = Defaults.getSvgFilterDefaults(selectionView);
-
-    SvgFilters.createFilterNode(this.context.svg, this.context.guid, Defaults.getSelectionFilterId(this.context.guid), {
-      ...svgFilterDefaults,
-      color: selectionView?.selectColor ?? Defaults.selectionColor
-    });
-
-    const clearSelection = (evt: MouseEvent) => {
+    this.subscribe(this.context.svg, 'click', (evt: MouseEvent) => {
       evt.stopPropagation();
       this.setSelection(null, evt);
-    }
-
-    this.subscribe(this.context.svg, 'click', clearSelection);
+    });
 
     for (const shapeId in diagram.shapes) {
-
       const info = diagram.shapes[shapeId];
-      if (Utils.isShapeInteractive(info)) {
+      if (info.DefaultLink
+        || info.Props && Object.keys(info.Props).length
+        || info.Links?.length
+        || info.Comment || info.PopoverMarkdown || info.SidebarMarkdown || info.TooltipMarkdown
+        || diagram.selectionView?.enableNextShapeColor && info.ConnectedTo?.length
+        || diagram.selectionView?.enablePrevShapeColor && info.ConnectedFrom?.length
+      ) {
+        {
+          const shape = Utils.findTargetElement(shapeId, this.context);
+          if (shape) {
+            shape.style.cursor = 'pointer';
 
-        const shape = Utils.findTargetElement(shapeId, this.context);
-        if (!shape)
-          return;
-
-        shape.style.cursor = 'pointer';
-
-        const setSelection = (evt: MouseEvent) => {
-          evt.stopPropagation();
-          this.setSelection(shapeId, evt);
+            this.subscribe(shape, 'click', (evt: MouseEvent) => {
+              evt.stopPropagation();
+              this.setSelection(shapeId, evt);
+            });
+          }
         }
-
-        this.subscribe(shape, 'click', setSelection);
       }
     }
 
@@ -75,38 +68,10 @@ export class SelectionService extends BasicService implements ISelectionService 
     }
   }
 
-  private deselectBox() {
-    const hoverBox = document.getElementById(Defaults.getHoverBoxId(this.context.guid));
-    if (hoverBox) {
-      hoverBox.parentNode.removeChild(hoverBox);
-    }
-    const selectionBox = document.getElementById(Defaults.getSelectionBoxId(this.context.guid));
-    if (selectionBox) {
-      selectionBox.parentNode.removeChild(selectionBox);
-    }
-  }
-
   public destroy(): void {
-    this.deselectBox();
-    const filterNode = document.getElementById("vp-filter-defs");
-    if (filterNode) {
-      filterNode.parentNode.removeChild(filterNode);
-    }
+    SelectionUtils.destroySelectionFilters(this.context);
     this.clearSelection();
     super.destroy();
-  }
-
-  public clearSelection() {
-    const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
-    if (selectedShape) {
-      if (this.enableBoxSelection) {
-        this.deselectBox();
-      } else {
-        selectedShape.removeAttribute('filter');
-      }
-    }
-
-    delete this.selectedShapeId;
   }
 
   public setSelection(shapeId: string, evt?: Event) {
@@ -114,10 +79,55 @@ export class SelectionService extends BasicService implements ISelectionService 
     const diagram = this.context.diagram;
 
     if (this.selectedShapeId && this.selectedShapeId !== shapeId) {
-      this.clearSelection();
+
+      const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
+      if (selectedShape) {
+        SelectionUtils.removeShapeHighlight(selectedShape, this.context);
+        delete this.highlightedShapeIds[this.selectedShapeId];
+        const info = diagram.shapes[this.selectedShapeId];
+
+        if (diagram.selectionView && (diagram.selectionView.enableNextShapeColor || diagram.selectionView.enableNextConnColor) && info.ConnectedTo) {
+          for (let item of info.ConnectedTo) {
+            if (diagram.selectionView.enableNextShapeColor) {
+              const sid = Utils.findTargetElement(item.sid, this.context);
+              SelectionUtils.removeShapeHighlight(sid, this.context);
+              delete this.highlightedShapeIds[item.sid];
+            }
+
+            if (diagram.selectionView.enableNextConnColor) {
+              const cid = Utils.findTargetElement(item.cid, this.context);
+              SelectionUtils.removeConnHighlight(cid, this.context);
+              delete this.highlightedShapeIds[item.cid];
+            }
+
+
+          }
+        }
+
+        if (diagram.selectionView && (diagram.selectionView.enablePrevShapeColor || diagram.selectionView.enablePrevConnColor) && info.ConnectedFrom) {
+          for (let item of info.ConnectedFrom) {
+            if (diagram.selectionView.enablePrevShapeColor) {
+              const sid = Utils.findTargetElement(item.sid, this.context);
+              SelectionUtils.removeShapeHighlight(sid, this.context);
+              delete this.highlightedShapeIds[item.sid];
+            }
+
+            if (diagram.selectionView.enablePrevConnColor) {
+              const cid = Utils.findTargetElement(item.cid, this.context);
+              SelectionUtils.removeConnHighlight(cid, this.context);
+              delete this.highlightedShapeIds[item.cid];
+            }
+          }
+        }
+      }
+
+      delete this.selectedShapeId;
     }
 
     if (!this.selectedShapeId || this.selectedShapeId !== shapeId) {
+
+      this.selectedShapeId = shapeId;
+      this.highlightedShapeIds = {};
 
       this.selectedShapeId = shapeId;
       const selectionChangedEvent = new CustomEvent<ISelectionChangedEventData>('selectionChanged', {
@@ -134,26 +144,54 @@ export class SelectionService extends BasicService implements ISelectionService 
 
       const shapeToSelect = Utils.findTargetElement(shapeId, this.context);
       if (shapeToSelect) {
-        const selectionView = diagram.selectionView;
-        if (this.enableBoxSelection) {
+        const info = diagram.shapes[shapeId];
 
-          this.deselectBox();
+        if (diagram.selectionView && (diagram.selectionView.enableNextShapeColor || diagram.selectionView.enableNextConnColor) && info.ConnectedTo) {
+          for (const item of info.ConnectedTo) {
+            if (diagram.selectionView.enableNextShapeColor) {
+              const nextColor = Utils.getValueOrDefault(diagram.selectionView?.nextShapeColor, Defaults.nextShapeColor);
+              const sid = Utils.findTargetElement(item.sid, this.context);
+              SelectionUtils.setShapeHighlight(sid, Defaults.getNextShapeFilterId(this.context.guid), nextColor, this.context);
+              this.highlightedShapeIds[item.sid] = true;
+            }
 
-          const rect = shapeToSelect.getBBox();
-          const options = {
-            color: selectionView.selectColor || Defaults.selectionColor,
-            dilate: selectionView.dilate || 4,
-            enableDilate: selectionView.enableDilate,
-            mode: selectionView.mode
-          };
-
-          const box = SvgFilters.createSelectionBox(Defaults.getSelectionBoxId(this.context.guid), rect, options);
-          shapeToSelect.appendChild(box);
-        } else {
-          shapeToSelect.setAttribute('filter', `url(#${Defaults.getSelectionFilterId(this.context.guid)})`);
+            if (diagram.selectionView.enableNextConnColor) {
+              const connColor = Utils.getValueOrDefault(diagram.selectionView?.nextConnColor, Defaults.nextConnColor);
+              const cid = Utils.findTargetElement(item.cid, this.context);
+              SelectionUtils.setConnHighlight(cid, connColor, this.context);
+              this.highlightedShapeIds[item.cid] = true;
+            }
+          }
         }
+
+        if (diagram.selectionView && (diagram.selectionView.enablePrevShapeColor || diagram.selectionView.enablePrevConnColor) && info.ConnectedFrom) {
+          for (const item of info.ConnectedFrom) {
+
+            if (diagram.selectionView.enablePrevShapeColor) {
+              const prevColor = Utils.getValueOrDefault(diagram.selectionView?.prevShapeColor, Defaults.prevShapeColor);
+              const sid = Utils.findTargetElement(item.sid, this.context);
+              SelectionUtils.setShapeHighlight(sid, Defaults.getPrevShapeFilterId(this.context.guid), prevColor, this.context);
+              this.highlightedShapeIds[item.sid] = true;
+            }
+
+            if (diagram.selectionView.enablePrevConnColor) {
+              const connColor = Utils.getValueOrDefault(diagram.selectionView?.prevConnColor, Defaults.prevConnColor);
+              const cid = Utils.findTargetElement(item.cid, this.context);
+              SelectionUtils.setConnHighlight(cid, connColor, this.context);
+              this.highlightedShapeIds[item.cid] = true;
+            }
+          }
+        }
+
+        const selectColor = diagram.selectionView && diagram.selectionView.selectColor || Defaults.selectionColor;
+        SelectionUtils.setShapeHighlight(shapeToSelect, Defaults.getSelectionFilterId(this.context.guid), selectColor, this.context);
+        this.highlightedShapeIds[shapeId] = true;
       }
     }
+  }
+
+  public clearSelection() {
+    this.setSelection(null);
   }
 
   public highlightShape(shapeId: string) {

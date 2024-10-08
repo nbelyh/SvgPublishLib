@@ -16,12 +16,14 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  experiments: {
+    outputModule: true
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'svgpublish.js',
     library: {
-      name: 'svgpublish',
-      type: 'umd'
+      type: 'module'
     }
   },
   watchOptions: {

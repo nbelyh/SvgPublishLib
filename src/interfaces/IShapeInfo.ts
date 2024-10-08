@@ -4,6 +4,7 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { IConnInfo } from './IConnInfo';
 import { ILinkInfo } from './ILinkInfo';
 
 /**
@@ -70,4 +71,7 @@ export interface IShapeInfo {
   SidebarMarkdown?: string;
   TooltipMarkdown?: string;
   ContentMarkdown?: string;
+
+  ConnectedTo: IConnInfo[];
+  ConnectedFrom: IConnInfo[];
 }
