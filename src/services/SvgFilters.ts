@@ -4,8 +4,6 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
-import { Defaults } from './Defaults';
-
 const SVGNS = 'http://www.w3.org/2000/svg';
 
 export class SvgFilters {
@@ -159,7 +157,7 @@ export class SvgFilters {
 
     filterNode.appendChild(feBlend);
 
-    const defsId = Defaults.getFilterDefsId(guid);
+    const defsId = `vp-defs-${guid}`;
     let defsNode: SVGDefsElement = svg.getElementById(defsId) as any;
     if (!defsNode) {
       defsNode = document.createElementNS(SVGNS, "defs");

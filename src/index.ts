@@ -7,3 +7,4 @@
 export * from './events';
 export * from './SvgPublishContext'
 export * from './interfaces';
+export * from './constants/DefaultColors';
