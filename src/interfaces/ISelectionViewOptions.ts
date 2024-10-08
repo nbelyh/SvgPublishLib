@@ -12,6 +12,9 @@ export interface ISelectionViewOptions {
   /// Size of the dilate
   dilate?: number;
 
+  /// Size of the connection dilate
+  connDilate?: number;
+
   /// Size of blur
   blur?: number;
 
@@ -20,6 +23,9 @@ export interface ISelectionViewOptions {
 
   /// Enable dilate (empty for none)
   enableDilate?: boolean;
+
+  /// Enable connection dilate (empty for none)
+  enableConnDilate?: boolean;
 
   /// Mode, "normal" for border only, lighten/darken for full box
   mode?: 'normal' | 'lighten' | 'darken';
@@ -32,4 +38,28 @@ export interface ISelectionViewOptions {
 
   /// Shape selection color
   selectColor?: string;
+
+  /// Enable prev shape highlight
+  enablePrevShapeColor?: boolean;
+
+  /// Enable next shape highlight
+  enableNextShapeColor?: boolean;
+
+  /// Enable prev conn highlight
+  enablePrevConnColor?: boolean;
+
+  /// Enable next conn highlight
+  enableNextConnColor?: boolean;
+
+  /// Prev shape highlight color
+  prevShapeColor?: string;
+
+  /// Next shape highlight color
+  nextShapeColor?: string;
+
+  /// Prev conn highlight color
+  prevConnColor?: string;
+
+  /// Next shape highlight color
+  nextConnColor?: string;
 }

@@ -13,16 +13,6 @@ export class Utils {
     return Math.random().toString(36).substring(2, 9)
   }
 
-  public static isShapeInteractive(shape: IShapeInfo) {
-    return shape.DefaultLink
-      || shape.Props && Object.keys(shape.Props).length
-      || shape.Links && shape.Links.length
-      || shape.Comment
-      || shape.PopoverMarkdown
-      || shape.SidebarMarkdown
-      || shape.TooltipMarkdown
-  }
-
   public static getValueOrDefault<T>(val: T, def: T) {
     return typeof val === 'undefined' ? def : val;
   }
