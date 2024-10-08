@@ -82,7 +82,7 @@ export class SelectionService extends BasicService implements ISelectionService 
 
       const selectedShape = Utils.findTargetElement(this.selectedShapeId, this.context);
       if (selectedShape) {
-        SelectionUtils.removeShapeHighlight(selectedShape, this.context);
+        SelectionUtils.removeShapeHighlight(selectedShape, SelectionUtils.getSelectionBoxId(this.context.guid, this.selectedShapeId), this.context);
         delete this.highlightedShapeIds[this.selectedShapeId];
         const info = diagram.shapes[this.selectedShapeId];
 
@@ -90,7 +90,7 @@ export class SelectionService extends BasicService implements ISelectionService 
           for (let item of info.ConnectedTo) {
             if (diagram.selectionView.enableNextShapeColor) {
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.removeShapeHighlight(sid, this.context);
+              SelectionUtils.removeShapeHighlight(sid, SelectionUtils.getSelectionBoxId(this.context.guid, item.sid), this.context);
               delete this.highlightedShapeIds[item.sid];
             }
 
@@ -108,7 +108,7 @@ export class SelectionService extends BasicService implements ISelectionService 
           for (let item of info.ConnectedFrom) {
             if (diagram.selectionView.enablePrevShapeColor) {
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.removeShapeHighlight(sid, this.context);
+              SelectionUtils.removeShapeHighlight(sid, SelectionUtils.getSelectionBoxId(this.context.guid, item.sid), this.context);
               delete this.highlightedShapeIds[item.sid];
             }
 
@@ -151,7 +151,11 @@ export class SelectionService extends BasicService implements ISelectionService 
             if (diagram.selectionView.enableNextShapeColor) {
               const nextColor = Utils.getValueOrDefault(diagram.selectionView?.nextShapeColor, DefaultColors.nextShapeColor);
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.setShapeHighlight(sid, SelectionUtils.getNextShapeFilterId(this.context.guid), nextColor, this.context);
+              SelectionUtils.setShapeHighlight(sid,
+                SelectionUtils.getSelectionBoxId(this.context.guid, item.sid),
+                SelectionUtils.getNextShapeFilterId(this.context.guid),
+                nextColor,
+                this.context);
               this.highlightedShapeIds[item.sid] = true;
             }
 
@@ -170,7 +174,11 @@ export class SelectionService extends BasicService implements ISelectionService 
             if (diagram.selectionView.enablePrevShapeColor) {
               const prevColor = Utils.getValueOrDefault(diagram.selectionView?.prevShapeColor, DefaultColors.prevShapeColor);
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.setShapeHighlight(sid, SelectionUtils.getPrevShapeFilterId(this.context.guid), prevColor, this.context);
+              SelectionUtils.setShapeHighlight(sid,
+                SelectionUtils.getSelectionBoxId(this.context.guid, item.sid),
+                SelectionUtils.getPrevShapeFilterId(this.context.guid),
+                prevColor,
+                this.context);
               this.highlightedShapeIds[item.sid] = true;
             }
 
@@ -184,7 +192,11 @@ export class SelectionService extends BasicService implements ISelectionService 
         }
 
         const selectColor = diagram.selectionView && diagram.selectionView.selectColor || DefaultColors.selectionColor;
-        SelectionUtils.setShapeHighlight(shapeToSelect, SelectionUtils.getSelectionFilterId(this.context.guid), selectColor, this.context);
+        SelectionUtils.setShapeHighlight(shapeToSelect,
+          SelectionUtils.getSelectionBoxId(this.context.guid, shapeId),
+          SelectionUtils.getSelectionFilterId(this.context.guid),
+          selectColor,
+          this.context);
         this.highlightedShapeIds[shapeId] = true;
       }
     }

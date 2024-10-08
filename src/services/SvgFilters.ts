@@ -10,7 +10,7 @@ export class SvgFilters {
 
   private static colorToRGBA(input: string) {
 
-    var matchRGBA = /rgba\((\d{1,3}), (\d{1,3}), (\d{1,3}), ([\d|\.]+)\)/.exec(input);
+    const matchRGBA = /rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*([\d|\.]+)\)/.exec(input);
     if (matchRGBA) {
       return {
         r: parseInt(matchRGBA[1]) / 255,
@@ -20,7 +20,17 @@ export class SvgFilters {
       }
     }
 
-    var matchRGB = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/.exec(input);
+    const matchHexRGBA = /rgba\(0x([a-f\d]{2}), 0x([a-f\d]{2}), 0x([a-f\d]{2}), ([\d|\.]+)\)/.exec(input);
+    if (matchHexRGBA) {
+      return {
+        r: parseInt(matchHexRGBA[1], 16) / 255,
+        g: parseInt(matchHexRGBA[2], 16) / 255,
+        b: parseInt(matchHexRGBA[3], 16) / 255,
+        a: parseFloat(matchHexRGBA[4])
+      }
+    }
+
+    const matchRGB = /rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)/.exec(input);
     if (matchRGB) {
       return {
         r: parseInt(matchRGB[1]) / 255,
@@ -30,7 +40,7 @@ export class SvgFilters {
       }
     }
 
-    var matchHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(input);
+    const matchHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(input);
     if (matchHex) {
       return {
         r: parseInt(matchHex[1], 16) / 255,

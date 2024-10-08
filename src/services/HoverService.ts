@@ -7,7 +7,6 @@
 import { ISvgPublishContext } from '../interfaces/ISvgPublishContext';
 import { BasicService } from './BasicService';
 import { IHoverService } from '../interfaces/IHoverService';
-import { SvgFilters } from './SvgFilters';
 import { Utils } from './Utils';
 import { DefaultColors } from '../constants/DefaultColors';
 import { SelectionUtils } from './SelectionUtils';
@@ -48,6 +47,8 @@ export class HoverService extends BasicService implements IHoverService {
         || diagram.selectionView?.enablePrevShapeColor && info.ConnectedFrom?.length
       ) {
 
+        const boxId = SelectionUtils.getSelectionBoxId(this.context.guid, shapeId);
+
         const shape = Utils.findTargetElement(shapeId, this.context);
         if (shape) {
 
@@ -60,13 +61,13 @@ export class HoverService extends BasicService implements IHoverService {
               var hyperlinkColor = Utils.getValueOrDefault(selectionView?.hyperlinkColor, DefaultColors.hyperlinkColor);
               var hoverColor = Utils.getValueOrDefault(selectionView?.hoverColor, DefaultColors.hoverColor);
               var color = (diagram.enableFollowHyperlinks && info.DefaultLink) ? hyperlinkColor : hoverColor;
-              SelectionUtils.setShapeHighlight(shape, filter, color, this.context);
+              SelectionUtils.setShapeHighlight(shape, boxId, filter, color, this.context);
             }
           });
 
           this.subscribe(shape, 'mouseout', () => {
             if (!selectionService?.highlightedShapeIds[shapeId]) {
-              SelectionUtils.removeShapeHighlight(shape, this.context);
+              SelectionUtils.removeShapeHighlight(shape, boxId, this.context);
             }
           });
         }

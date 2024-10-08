@@ -16,7 +16,7 @@ export class SelectionUtils {
   private static getMarkerEndId = (guid: string, shape: string) => `vp-marker-end-${guid}-${shape}`;
   private static getMarkerStartId = (guid: string, shape: string) => `vp-marker-start-${guid}-${shape}`;
 
-  private static getSelectionBoxId = (guid: string) => `vp-selection-box-${guid}`;
+  public static getSelectionBoxId = (guid: string, shape: string) => `vp-selection-box-${guid}-${shape}`;
 
   private static getMarkerId(markerUrl: string) {
     const match = markerUrl.match(/url\("(.*)"\)/);
@@ -147,17 +147,17 @@ export class SelectionUtils {
     }
   }
 
-  public static removeShapeHighlight(shape: SVGElement, context: ISvgPublishContext) {
+  public static removeShapeHighlight(shape: SVGElement, boxId: string, context: ISvgPublishContext) {
     if (context.diagram.selectionView.enableBoxSelection) {
-      SelectionUtils.removeElementById(SelectionUtils.getSelectionBoxId(context.guid), context);
+      SelectionUtils.removeElementById(boxId, context);
     } else {
       shape.removeAttribute('filter');
     }
   }
 
-  public static setShapeHighlight(shape: SVGGElement, filter: string, selectColor: string, context: ISvgPublishContext) {
+  public static setShapeHighlight(shape: SVGGElement, boxId: string, filter: string, selectColor: string, context: ISvgPublishContext) {
 
-    SelectionUtils.removeShapeHighlight(shape, context);
+    SelectionUtils.removeShapeHighlight(shape, boxId, context);
 
     const selectionView = context.diagram.selectionView;
 
@@ -171,7 +171,7 @@ export class SelectionUtils {
         mode: selectionView.mode
       };
 
-      const box = SvgFilters.createSelectionBox(SelectionUtils.getSelectionBoxId(context.guid), rect, options);
+      const box = SvgFilters.createSelectionBox(boxId, rect, options);
       shape.appendChild(box);
     } else {
       shape.setAttribute('filter', `url(#${filter})`);
