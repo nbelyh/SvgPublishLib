@@ -11,6 +11,7 @@
     "strictNullChecks": false,
     "noUnusedLocals": false,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "dist",
     "typeRoots": [
@@ -29,6 +30,7 @@
   ],
   "exclude": [
     "node_modules",
+    "src/**/*.test.ts",
     "dist"
   ]
 }

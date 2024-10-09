@@ -8,7 +8,7 @@ const SVGNS = 'http://www.w3.org/2000/svg';
 
 export class SvgFilters {
 
-  private static colorToRGBA(input: string) {
+  public static colorToRGBA(input: string) {
 
     const matchRGBA = /rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*([\d|\.]+)\)/.exec(input);
     if (matchRGBA) {
@@ -20,7 +20,7 @@ export class SvgFilters {
       }
     }
 
-    const matchHexRGBA = /rgba\(0x([a-f\d]{2}), 0x([a-f\d]{2}), 0x([a-f\d]{2}), ([\d|\.]+)\)/.exec(input);
+    const matchHexRGBA = /rgba\(0x([a-fA-F\d]{2}), 0x([a-f\d]{2}), 0x([a-f\d]{2}), ([\d|\.]+)\)/i.exec(input);
     if (matchHexRGBA) {
       return {
         r: parseInt(matchHexRGBA[1], 16) / 255,
