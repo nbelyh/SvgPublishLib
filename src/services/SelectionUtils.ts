@@ -23,7 +23,7 @@ export class SelectionUtils {
     return match && match[1];
   }
 
-  private static removeElementById(markerId: string, context: ISvgPublishContext) {
+  public static removeElementById(markerId: string, context: ISvgPublishContext) {
     const elem = context.svg.getElementById(markerId);
     if (elem) {
       elem.parentElement.removeChild(elem);
@@ -117,8 +117,10 @@ export class SelectionUtils {
 
       const style = getComputedStyle(path);
 
+      const id = SelectionUtils.getConnPathId(context.guid, shape.id);
+
       var pathClone = path.cloneNode(true) as SVGPathElement;
-      pathClone.id = SelectionUtils.getConnPathId(context.guid, shape.id);
+      pathClone.id = id;
       pathClone.style.stroke = selectColor;
 
       const selectionView = context.diagram.selectionView;
@@ -144,6 +146,7 @@ export class SelectionUtils {
       }
 
       shape.appendChild(pathClone);
+      return id;
     }
   }
 
