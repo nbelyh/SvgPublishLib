@@ -15,7 +15,7 @@ import { DefaultColors } from '../constants/DefaultColors';
 export class SelectionService extends BasicService implements ISelectionService {
 
   public selectedShapeId: string = null;
-  public highlightedShapeIds: { [shapeId: string]: boolean } = {};
+  public highlightedShapeIds: { [shapeId: string]: string } = {};
 
   constructor(context: ISvgPublishContext) {
     super(context);
@@ -33,6 +33,7 @@ export class SelectionService extends BasicService implements ISelectionService 
 
     const diagram = this.context.diagram;
 
+    SelectionUtils.destroySelectionFilters(this.context);
     SelectionUtils.createSelectionFilters(this.context, diagram.selectionView);
 
     this.subscribe(this.context.svg, 'click', (evt: MouseEvent) => {
@@ -151,19 +152,19 @@ export class SelectionService extends BasicService implements ISelectionService 
             if (diagram.selectionView.enableNextShapeColor) {
               const nextColor = Utils.getValueOrDefault(diagram.selectionView?.nextShapeColor, DefaultColors.nextShapeColor);
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.setShapeHighlight(sid,
-                SelectionUtils.getSelectionBoxId(this.context.guid, item.sid),
+              const id = SelectionUtils.getSelectionBoxId(this.context.guid, item.sid);
+              SelectionUtils.setShapeHighlight(sid, id,
                 SelectionUtils.getNextShapeFilterId(this.context.guid),
                 nextColor,
                 this.context);
-              this.highlightedShapeIds[item.sid] = true;
+              this.highlightedShapeIds[item.sid] = id;
             }
 
             if (diagram.selectionView.enableNextConnColor) {
               const connColor = Utils.getValueOrDefault(diagram.selectionView?.nextConnColor, DefaultColors.nextConnColor);
               const cid = Utils.findTargetElement(item.cid, this.context);
-              SelectionUtils.setConnHighlight(cid, connColor, this.context);
-              this.highlightedShapeIds[item.cid] = true;
+              const id = SelectionUtils.setConnHighlight(cid, connColor, this.context);
+              this.highlightedShapeIds[item.cid] = id;
             }
           }
         }
@@ -174,36 +175,46 @@ export class SelectionService extends BasicService implements ISelectionService 
             if (diagram.selectionView.enablePrevShapeColor) {
               const prevColor = Utils.getValueOrDefault(diagram.selectionView?.prevShapeColor, DefaultColors.prevShapeColor);
               const sid = Utils.findTargetElement(item.sid, this.context);
-              SelectionUtils.setShapeHighlight(sid,
-                SelectionUtils.getSelectionBoxId(this.context.guid, item.sid),
+              const id = SelectionUtils.getSelectionBoxId(this.context.guid, item.sid);
+              SelectionUtils.setShapeHighlight(sid, id,
                 SelectionUtils.getPrevShapeFilterId(this.context.guid),
                 prevColor,
                 this.context);
-              this.highlightedShapeIds[item.sid] = true;
+              this.highlightedShapeIds[item.sid] = id;
             }
 
             if (diagram.selectionView.enablePrevConnColor) {
               const connColor = Utils.getValueOrDefault(diagram.selectionView?.prevConnColor, DefaultColors.prevConnColor);
               const cid = Utils.findTargetElement(item.cid, this.context);
-              SelectionUtils.setConnHighlight(cid, connColor, this.context);
-              this.highlightedShapeIds[item.cid] = true;
+              const id = SelectionUtils.setConnHighlight(cid, connColor, this.context);
+              this.highlightedShapeIds[item.cid] = id;
             }
           }
         }
 
         const selectColor = diagram.selectionView && diagram.selectionView.selectColor || DefaultColors.selectionColor;
-        SelectionUtils.setShapeHighlight(shapeToSelect,
-          SelectionUtils.getSelectionBoxId(this.context.guid, shapeId),
+        const id = SelectionUtils.getSelectionBoxId(this.context.guid, shapeId);
+        SelectionUtils.setShapeHighlight(shapeToSelect, id,
           SelectionUtils.getSelectionFilterId(this.context.guid),
           selectColor,
           this.context);
-        this.highlightedShapeIds[shapeId] = true;
+        this.highlightedShapeIds[shapeId] = id;
       }
     }
   }
 
   public clearSelection() {
-    this.setSelection(null);
+    for (const shapeId in this.highlightedShapeIds) {
+      const selectedElem = this.context.svg.getElementById(this.highlightedShapeIds[shapeId]);
+      if (selectedElem) {
+        selectedElem.parentElement.removeChild(selectedElem);
+      }
+      const shape = this.context.svg.getElementById(shapeId);
+      if (shape) {
+        shape.removeAttribute('filter');
+      }
+    }
+    this.selectedShapeId = null;
   }
 
   public highlightShape(shapeId: string) {

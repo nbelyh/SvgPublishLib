@@ -33,6 +33,7 @@ export class HoverService extends BasicService implements IHoverService {
     const selectionView = diagram?.selectionView;
     const selectionService = this.context.services.selection;
 
+    SelectionUtils.destroyHoverFilters(this.context);
     SelectionUtils.createHoverFilters(this.context, selectionView);
 
     for (const shapeId in diagram.shapes) {
