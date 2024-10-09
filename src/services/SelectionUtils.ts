@@ -126,7 +126,7 @@ export class SelectionUtils {
       const selectionView = context.diagram.selectionView;
 
       if (selectionView.enableConnDilate) {
-        const strokeWidth = parseFloat(style.strokeWidth) + (+selectionView.connDilate || 2);
+        const strokeWidth = parseFloat(style.strokeWidth) + Utils.getValueOrDefault(selectionView.connDilate, 1);
         pathClone.style.strokeWidth = strokeWidth + "px";
       }
 

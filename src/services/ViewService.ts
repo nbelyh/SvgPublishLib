@@ -91,7 +91,7 @@ export class ViewService extends BasicService implements IViewService {
     this.subscribe(container, "mousemove", this.handleMouseMove, { passive: false });
 
     if (isTouch) {
-      this.subscribe(container, "touchstart", this.handleTouchStart, { passive: true });
+      this.subscribe(container, "touchstart", this.handleTouchStart, { passive: false });
       this.subscribe(container, "touchmove", this.handleMouseMove, { passive: false });
     }
 
