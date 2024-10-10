@@ -56,8 +56,6 @@ export class ViewService extends BasicService implements IViewService {
     }
 
     this.reset();
-
-    this.subscribeAll();
   }
 
   private wrapSvgContentsInGroup(svgElement: SVGSVGElement) {
@@ -86,25 +84,30 @@ export class ViewService extends BasicService implements IViewService {
 
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    this.subscribe(container, "mousedown", this.handleMouseDown, { passive: false });
-    this.subscribe(container, "mouseup", this.handleMouseUp);
-    this.subscribe(container, "mousemove", this.handleMouseMove, { passive: false });
+    if (this.enablePan || this.enableZoom) {
+      this.subscribe(container, "mousedown", this.handleMouseDown, { passive: false });
+      this.subscribe(container, "mousemove", this.handleMouseMove, { passive: false });
+      this.subscribe(container, 'click', this.handleClick, true);
 
-    if (isTouch) {
-      this.subscribe(container, "touchstart", this.handleTouchStart, { passive: false });
-      this.subscribe(container, "touchmove", this.handleMouseMove, { passive: false });
+      if (isTouch) {
+        this.subscribe(container, "touchstart", this.handleTouchStart, { passive: false });
+        this.subscribe(container, "touchmove", this.handleMouseMove, { passive: false });
+      }
     }
 
-    this.subscribe(svg, 'click', this.handleClick, true);
 
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0) { // Firefox
-      this.subscribe(container, 'DOMMouseScroll', this.handleMouseWheel, { passive: false });
-    } else { // Chrome/Safari/Opera/IE
-      this.subscribe(container, 'mousewheel', this.handleMouseWheel, { passive: false });
+    if (this.enableZoom) {
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') >= 0) { // Firefox
+        this.subscribe(container, 'DOMMouseScroll', this.handleMouseWheel, { passive: false });
+      } else { // Chrome/Safari/Opera/IE
+        this.subscribe(container, 'mousewheel', this.handleMouseWheel, { passive: false });
+      }
     }
   }
 
   public reset() {
+
+    this.unsubscribe();
 
     const bbox = this.viewBox.split(' ');
 
@@ -126,6 +129,8 @@ export class ViewService extends BasicService implements IViewService {
     m = m.scale(sz.width / width);
 
     this.setCTM(m, null);
+
+    this.subscribeAll();
   }
 
   public setFocusShape(shapeId: string) {
@@ -367,21 +372,10 @@ export class ViewService extends BasicService implements IViewService {
       reset state on mouse up
   */
 
-  private handleMouseUp = (evt: MouseEvent) => {
-    if (this.state === 'pan' || this.state === 'pinch') {
-      if (evt.stopPropagation) {
-        evt.stopPropagation();
-      }
-    }
-    this.state = null;
-  }
-
   private handleClick = (evt: MouseEvent) => {
 
     // prevent firing 'click' event in case we pan or zoom
     if (this.state === 'pan' || this.state === 'pinch') {
-
-      if (evt.stopPropagation)
         evt.stopPropagation();
     }
 
