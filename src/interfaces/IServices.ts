@@ -3,6 +3,7 @@ import { IViewService } from './IViewService';
 import { ISelectionService } from './ISelectionService';
 import { IHoverService } from './IHoverService';
 import { ILinksService } from './ILinksService';
+import { ITooltipService } from './ITooltipService';
 // import { IBasicService } from './IBasicService';
 
 export interface IServices {
@@ -11,5 +12,6 @@ export interface IServices {
   links?: ILinksService;
   hover?: IHoverService;
   hash?: IHashService;
+  tooltip?: ITooltipService;
   // [key: string]: IBasicService;
 };

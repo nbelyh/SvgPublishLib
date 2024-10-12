@@ -8,6 +8,7 @@ import { IDiagramInfo } from './interfaces/IDiagramInfo';
 import { IServices } from './interfaces/IServices';
 import { VisioSvgParser } from './services/VisioSvgParser';
 import { Utils } from './services/Utils';
+import { TooltipService } from './services/TooltipServic';
 
 export class SvgPublishContext implements ISvgPublishContext {
 
@@ -65,6 +66,7 @@ export class SvgPublishContext implements ISvgPublishContext {
       case 'links': return new LinksService(this);
       case 'hover': return new HoverService(this);
       case 'hash': return new HashService(this);
+      case 'tooltip': return new TooltipService(this);
     }
   }
 

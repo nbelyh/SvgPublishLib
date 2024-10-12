@@ -38,7 +38,6 @@ export interface IDiagramInfo {
 
   enableSelection?: boolean;
   enableLayers?: boolean;
-  enableTooltips?: boolean;
 
   enableSidebar: boolean;
 
@@ -74,9 +73,6 @@ export interface IDiagramInfo {
   enableSidebarMarkdown: boolean;
   sidebarMarkdown: string;
 
-  enableTooltipMarkdown: boolean;
-  tooltipMarkdown: boolean;
-
   enablePopovers: boolean;
   enablePopoverMarkdown: boolean;
   popoverMarkdown: string;
@@ -86,13 +82,22 @@ export interface IDiagramInfo {
 
   startPageId: number;
 
-  tooltipTriggerOption: string;
-  tooltipTimeout: number;
-  tooltipTimeoutShow: number;
-  tooltipTimeoutHide: number;
-  tooltipLocationOption: string;
+  enableTooltips?: boolean;
+  enableTooltipMarkdown: boolean;
+  tooltipMarkdown: string;
+
+  tooltipTrigger?: 'mouseenter' | 'click' | 'mouseenter click';
+  tooltipDelay: boolean;
+  tooltipDelayShow: number;
+  tooltipDelayHide: number;
+  tooltipPlacement: 'auto' | 'auto-start' | 'auto-end' |
+    'top' | 'top-start' | 'top-end' |
+    'right' | 'right-start' | 'right-end' |
+    'bottom' | 'bottom-start' | 'bottom-end' |
+    'left' | 'left-start' | 'left-end';
   tooltipUseMousePosition?: boolean;
   tooltipOutsideClick: boolean;
+  tooltipInteractive: boolean;
 
   sidebarDefaultWidth: number;
 
@@ -102,7 +107,6 @@ export interface IDiagramInfo {
   popoverUseMousePosition: boolean;
   popoverOutsideClick: boolean;
 
-  tooltipKeepOnHover: boolean;
   popoverKeepOnHover: boolean;
 
   enableContainerTip: boolean;
