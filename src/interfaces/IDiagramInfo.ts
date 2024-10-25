@@ -116,7 +116,6 @@ export interface IDiagramInfo {
 
 
   enableHover?: boolean;
-  enableHash: boolean;
 
   enablePan?: boolean;
   enableZoom?: boolean;

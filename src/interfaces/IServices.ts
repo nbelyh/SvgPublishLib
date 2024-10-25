@@ -1,4 +1,3 @@
-import { IHashService } from "./IHashService";
 import { IViewService } from './IViewService';
 import { ISelectionService } from './ISelectionService';
 import { IHoverService } from './IHoverService';
@@ -11,7 +10,6 @@ export interface IServices {
   selection?: ISelectionService;
   links?: ILinksService;
   hover?: IHoverService;
-  hash?: IHashService;
   tooltip?: ITooltipService;
   // [key: string]: IBasicService;
 };

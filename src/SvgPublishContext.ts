@@ -3,7 +3,6 @@ import { ViewService } from './services/ViewService';
 import { SelectionService } from './services/SelectionService';
 import { LinksService } from './services/LinksService';
 import { HoverService } from './services/HoverService';
-import { HashService } from './services/HashService';
 import { IDiagramInfo } from './interfaces/IDiagramInfo';
 import { IServices } from './interfaces/IServices';
 import { VisioSvgParser } from './services/VisioSvgParser';
@@ -46,10 +45,6 @@ export class SvgPublishContext implements ISvgPublishContext {
     if (this.diagram.enableHover) {
       this.enableService('hover', true);
     }
-
-    if (this.diagram.enableHash) {
-      this.enableService('hash', true);
-    }
   }
 
   public destroy() {
@@ -65,7 +60,6 @@ export class SvgPublishContext implements ISvgPublishContext {
       case 'selection': return new SelectionService(this);
       case 'links': return new LinksService(this);
       case 'hover': return new HoverService(this);
-      case 'hash': return new HashService(this);
       case 'tooltip': return new TooltipService(this);
     }
   }
