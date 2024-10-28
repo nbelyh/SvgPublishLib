@@ -47,7 +47,7 @@ export class SelectionUtils {
       dilate: Utils.getValueOrDefault(selectionView?.dilate, 2),
       enableBlur: Utils.getValueOrDefault(selectionView?.enableBlur, true),
       enableDilate: Utils.getValueOrDefault(selectionView?.enableDilate, true),
-      mode: Utils.getValueOrDefault(selectionView?.mode, "normal")
+      mode: Utils.getValueOrDefault(selectionView?.selectionMode, "normal")
     }
   }
 
@@ -171,7 +171,7 @@ export class SelectionUtils {
         color: selectionColor,
         dilate: selectionView.dilate || 4,
         enableDilate: selectionView.enableDilate,
-        mode: selectionView.mode
+        mode: selectionView.selectionMode
       };
 
       const box = SvgFilters.createSelectionBox(boxId, rect, options);

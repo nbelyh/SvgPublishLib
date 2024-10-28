@@ -28,7 +28,7 @@ export interface ISelectionViewOptions {
   enableConnDilate?: boolean;
 
   /// Mode, "normal" for border only, lighten/darken for full box
-  mode?: 'normal' | 'lighten' | 'darken';
+  selectionMode?: 'normal' | 'lighten' | 'darken';
 
   /// Shape hover color
   hoverColor?: string;
