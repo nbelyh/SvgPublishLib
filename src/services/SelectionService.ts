@@ -192,11 +192,11 @@ export class SelectionService extends BasicService implements ISelectionService 
           }
         }
 
-        const selectColor = diagram.selectionView && diagram.selectionView.selectColor || DefaultColors.selectionColor;
+        const selectionColor = diagram.selectionView && diagram.selectionView.selectionColor || DefaultColors.selectionColor;
         const id = SelectionUtils.getSelectionBoxId(this.context.guid, shapeId);
         SelectionUtils.setShapeHighlight(shapeToSelect, id,
           SelectionUtils.getSelectionFilterId(this.context.guid),
-          selectColor,
+          selectionColor,
           this.context);
         this.highlightedShapeIds[shapeId] = id;
       }

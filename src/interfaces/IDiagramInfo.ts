@@ -17,19 +17,21 @@ export interface IDiagramInfo {
   pages: IPageInfo[];
   currentPage: IPageInfo;
 
-  layers: ILayerInfo[];
+  // enableLayers?: boolean;
+  // layers: ILayerInfo[];
 
-  searchIndex: any;
+  // searchIndex: any;
 
   fileName: string;
-  urlPrefix: string;
+  // urlPrefix: string;
 
   twoFingersTouch?: boolean;
-  enableAutoFrameHeight?: boolean;
-  safariFullscreen?: boolean;
-  enablePages?: boolean;
-  enablePageLookup?: boolean;
-  enablePageSort?: boolean;
+  // enableAutoFrameHeight?: boolean;
+  // safariFullscreen?: boolean;
+  // enablePages?: boolean;
+  // enablePageLookup?: boolean;
+  // enablePageSort?: boolean;
+
   enableZoomShift?: boolean;
   enableZoomCtrl?: boolean;
 
@@ -37,50 +39,47 @@ export interface IDiagramInfo {
   enableLinks?: boolean;
 
   enableSelection?: boolean;
-  enableLayers?: boolean;
 
-  enableSidebar: boolean;
+  // enableSidebar: boolean;
 
-  enableD3: boolean;
-  skipMinification: boolean;
-  enableBootstrapSwitch: boolean;
-  enableBootstrapSelect: boolean;
-  enableMustache: boolean;
-  enableMarked: boolean;
+  // enableD3: boolean;
+  // skipMinification: boolean;
+  // enableMustache: boolean;
+  // enableMarked: boolean;
 
   enableFollowHyperlinks?: boolean;
   openHyperlinksInNewWindow?: boolean;
-  transformVisioFileLinks: boolean;
+  // transformVisioFileLinks: boolean;
 
-  useReadablePageNames: boolean;
-  keepRelativeLinks: boolean;
+  // useReadablePageNames: boolean;
+  // keepRelativeLinks: boolean;
 
-  customTemplatePath: boolean;
+  // customTemplatePath: boolean;
 
-  allPages: boolean;
-  singlePage: boolean;
-  selectedPages: boolean;
-  selectedPagesText: string;
+  // allPages: boolean;
+  // singlePage: boolean;
+  // selectedPages: boolean;
+  // selectedPagesText: string;
 
-  enableSearch: boolean;
-  enableMultiPageSearch: boolean;
+  // enableSearch: boolean;
+  // enableMultiPageSearch: boolean;
 
-  rightSidebar: boolean;
-  alwaysHideSidebar: boolean;
-  showSidebarOnSelection: boolean;
+  // rightSidebar: boolean;
+  // alwaysHideSidebar: boolean;
+  // showSidebarOnSelection: boolean;
 
-  enableSidbarTitle: boolean;
-  enableSidebarMarkdown: boolean;
-  sidebarMarkdown: string;
+  // enableSidbarTitle: boolean;
+  // enableSidebarMarkdown: boolean;
+  // sidebarMarkdown: string;
 
-  enablePopovers: boolean;
-  enablePopoverMarkdown: boolean;
-  popoverMarkdown: string;
+  // enablePopovers: boolean;
+  // enablePopoverMarkdown: boolean;
+  // popoverMarkdown: string;
 
-  enableContentMarkdown: boolean;
-  contentMarkdown: string;
+  // enableContentMarkdown: boolean;
+  // contentMarkdown: string;
 
-  startPageId: number;
+  // startPageId: number;
 
   enableTooltips?: boolean;
   enableTooltipMarkdown: boolean;
@@ -99,21 +98,20 @@ export interface IDiagramInfo {
   tooltipOutsideClick: boolean;
   tooltipInteractive: boolean;
 
-  sidebarDefaultWidth: number;
+  // sidebarDefaultWidth: number;
 
-  popoverTriggerOption: string;
-  popoverTimeout: number;
-  popoverLocationOption: string;
-  popoverUseMousePosition: boolean;
-  popoverOutsideClick: boolean;
+  // popoverTriggerOption: string;
+  // popoverTimeout: number;
+  // popoverLocationOption: string;
+  // popoverUseMousePosition: boolean;
+  // popoverOutsideClick: boolean;
 
-  popoverKeepOnHover: boolean;
+  // popoverKeepOnHover: boolean;
 
-  enableContainerTip: boolean;
+  // enableContainerTip: boolean;
 
-  enablePropertySearch?: boolean;
-  enablePropertySearchFilter?: boolean;
-
+  // enablePropertySearch?: boolean;
+  // enablePropertySearchFilter?: boolean;
 
   enableHover?: boolean;
 

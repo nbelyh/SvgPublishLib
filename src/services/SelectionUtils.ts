@@ -30,13 +30,13 @@ export class SelectionUtils {
     }
   }
 
-  private static replaceMarker(oldId: string, newId: string, selectColor: string, context: ISvgPublishContext) {
+  private static replaceMarker(oldId: string, newId: string, selectionColor: string, context: ISvgPublishContext) {
     const markerNode = context.svg.querySelector(oldId) as SVGMarkerElement;
     if (markerNode) {
       const markerNodeClone = markerNode.cloneNode(true) as SVGMarkerElement;
       markerNodeClone.id = newId;
-      markerNodeClone.style.stroke = selectColor;
-      markerNodeClone.style.fill = selectColor;
+      markerNodeClone.style.stroke = selectionColor;
+      markerNodeClone.style.fill = selectionColor;
       markerNode.parentElement.appendChild(markerNodeClone);
     }
   }
@@ -77,7 +77,7 @@ export class SelectionUtils {
 
     SvgFilters.createFilterNode(context.svg, context.guid, SelectionUtils.getSelectionFilterId(context.guid), {
       ...svgFilterDefaults,
-      color: Utils.getValueOrDefault(selectionView?.selectColor, DefaultColors.selectionColor)
+      color: Utils.getValueOrDefault(selectionView?.selectionColor, DefaultColors.selectionColor)
     });
 
     if (selectionView.enableNextShapeColor) {
@@ -108,7 +108,7 @@ export class SelectionUtils {
     SelectionUtils.removeElementById(SelectionUtils.getMarkerStartId(context.guid, shape.id), context);
   }
 
-  public static setConnHighlight(shape: SVGElement, selectColor: string, context: ISvgPublishContext) {
+  public static setConnHighlight(shape: SVGElement, selectionColor: string, context: ISvgPublishContext) {
 
     SelectionUtils.removeConnHighlight(shape, context);
 
@@ -121,7 +121,7 @@ export class SelectionUtils {
 
       var pathClone = path.cloneNode(true) as SVGPathElement;
       pathClone.id = id;
-      pathClone.style.stroke = selectColor;
+      pathClone.style.stroke = selectionColor;
 
       const selectionView = context.diagram.selectionView;
 
@@ -135,13 +135,13 @@ export class SelectionUtils {
       const markerEndId = SelectionUtils.getMarkerId(style.markerEnd);
       if (markerEndId) {
         const id = SelectionUtils.getMarkerEndId(context.guid, shape.id);
-        SelectionUtils.replaceMarker(markerEndId, id, selectColor, context);
+        SelectionUtils.replaceMarker(markerEndId, id, selectionColor, context);
         pathClone.style.markerEnd = `url("#${id}")`;
       }
       const markerStartId = SelectionUtils.getMarkerId(style.markerStart);
       if (markerStartId) {
         const id = SelectionUtils.getMarkerStartId(context.guid, shape.id);
-        SelectionUtils.replaceMarker(markerStartId, id, selectColor, context);
+        SelectionUtils.replaceMarker(markerStartId, id, selectionColor, context);
         pathClone.style.markerStart = `url("#${id}")`;
       }
 
@@ -158,7 +158,7 @@ export class SelectionUtils {
     }
   }
 
-  public static setShapeHighlight(shape: SVGGElement, boxId: string, filter: string, selectColor: string, context: ISvgPublishContext) {
+  public static setShapeHighlight(shape: SVGGElement, boxId: string, filter: string, selectionColor: string, context: ISvgPublishContext) {
 
     SelectionUtils.removeShapeHighlight(shape, boxId, context);
 
@@ -168,7 +168,7 @@ export class SelectionUtils {
 
       const rect = shape.getBBox();
       const options = {
-        color: selectColor,
+        color: selectionColor,
         dilate: selectionView.dilate || 4,
         enableDilate: selectionView.enableDilate,
         mode: selectionView.mode

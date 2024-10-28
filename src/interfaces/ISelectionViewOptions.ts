@@ -37,7 +37,7 @@ export interface ISelectionViewOptions {
   hyperlinkColor?: string;
 
   /// Shape selection color
-  selectColor?: string;
+  selectionColor?: string;
 
   /// Enable prev shape highlight
   enablePrevShapeColor?: boolean;
