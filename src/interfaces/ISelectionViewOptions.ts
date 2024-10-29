@@ -4,6 +4,8 @@
 // Nikolay Belykh, nbelyh@gmail.com
 //-----------------------------------------------------------------------
 
+import { DiagramInfoSelectionMode } from './Constants';
+
 export interface ISelectionViewOptions {
 
   /// Enable "simple box" selection style
@@ -28,7 +30,7 @@ export interface ISelectionViewOptions {
   enableConnDilate?: boolean;
 
   /// Mode, "normal" for border only, lighten/darken for full box
-  selectionMode?: 'normal' | 'lighten' | 'darken';
+  selectionMode?: DiagramInfoSelectionMode;
 
   /// Shape hover color
   hoverColor?: string;

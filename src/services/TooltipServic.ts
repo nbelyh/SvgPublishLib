@@ -9,6 +9,7 @@ import { ITooltipService } from '../interfaces/ITooltipService';
 import tippy, { Instance, followCursor } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/light.css';
+import 'tippy.js/themes/light-border.css';
 import 'tippy.js/themes/translucent.css';
 
 export class TooltipService extends BasicService implements ITooltipService {

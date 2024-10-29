@@ -9,6 +9,7 @@ import { ILayerViewOptions } from './ILayerViewOptions';
 import { IShapeInfo } from './IShapeInfo';
 import { IPageInfo } from './IPageInfo';
 import { ILayerInfo } from './ILayerInfo';
+import { DiagramInfoTooltipPlacement, DiagramInfoTooltipTheme, DiagramInfoTooltipTrigger } from './Constants';
 
 export interface IDiagramInfo {
 
@@ -85,18 +86,14 @@ export interface IDiagramInfo {
   enableTooltipMarkdown: boolean;
   tooltipMarkdown: string;
 
-  tooltipTrigger?: 'mouseenter' | 'click' | 'mouseenter click';
+  tooltipTrigger?: DiagramInfoTooltipTrigger;
   tooltipDelay: boolean;
   tooltipDelayShow: number;
   tooltipDelayHide: number;
-  tooltipPlacement: 'auto' | 'auto-start' | 'auto-end' |
-    'top' | 'top-start' | 'top-end' |
-    'right' | 'right-start' | 'right-end' |
-    'bottom' | 'bottom-start' | 'bottom-end' |
-    'left' | 'left-start' | 'left-end';
+  tooltipPlacement: DiagramInfoTooltipPlacement;
   tooltipUseMousePosition?: boolean;
   tooltipInteractive: boolean;
-  tooltipTheme: 'dark' | 'light' | 'translucent';
+  tooltipTheme: DiagramInfoTooltipTheme;
 
   // sidebarDefaultWidth: number;
 
