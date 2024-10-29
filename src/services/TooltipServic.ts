@@ -8,6 +8,8 @@ import { ITooltipService } from '../interfaces/ITooltipService';
 
 import tippy, { Instance, followCursor } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
+import 'tippy.js/themes/translucent.css';
 
 export class TooltipService extends BasicService implements ITooltipService {
 
@@ -40,6 +42,7 @@ export class TooltipService extends BasicService implements ITooltipService {
       followCursor: diagram.tooltipUseMousePosition,
       appendTo: this.context.container,
       plugins: diagram.tooltipUseMousePosition ? [followCursor] : [],
+      theme: diagram.tooltipTheme,
     });
 
     for (const shapeId in diagram.shapes) {
