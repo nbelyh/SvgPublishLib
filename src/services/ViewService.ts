@@ -324,23 +324,32 @@ export class ViewService extends BasicService implements IViewService {
       start pan (one touch or mouse) or pinch (with two touches)
   */
 
-  private handleMouseDown = (evt) => {
+  private handleMouseDown = (evt: MouseEvent) => {
 
     if (!this.enablePan)
       return false;
 
-    if (evt.which !== 1)
+    if (evt.button !== 0)
       return false;
+
+    if (evt.target && !(evt.target instanceof SVGElement)) {
+      return false;
+    }
 
     evt.preventDefault();
 
-    return this.handleTouchStart(evt);
+    this.state = 'down';
+    this.setStartState(evt);
   }
 
   private handleTouchStart = (evt: TouchEvent) => {
 
     if (!this.enablePan)
       return false;
+
+    if (evt.target && !(evt.target instanceof SVGElement)) {
+      return false;
+    }
 
     const touches = evt.touches;
 
@@ -363,6 +372,10 @@ export class ViewService extends BasicService implements IViewService {
       this.state = 'down';
     }
 
+    this.setStartState(evt);
+  }
+
+  private setStartState(evt: MouseEvent | TouchEvent) {
     this.stateTf = this.viewPort.getCTM().inverse();
     this.stateOriginClient = this.getEventClientPoint(evt);
     this.stateOriginSvg = this.getSvgClientPoint(this.stateOriginClient).matrixTransform(this.stateTf);
