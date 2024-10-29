@@ -95,7 +95,6 @@ export interface IDiagramInfo {
     'bottom' | 'bottom-start' | 'bottom-end' |
     'left' | 'left-start' | 'left-end';
   tooltipUseMousePosition?: boolean;
-  tooltipOutsideClick: boolean;
   tooltipInteractive: boolean;
 
   // sidebarDefaultWidth: number;
