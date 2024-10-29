@@ -34,17 +34,10 @@ export class SvgPublishContext implements ISvgPublishContext {
 
     this.services.view = new ViewService(this, viewBox);
 
-    if (this.diagram.enableSelection) {
-      this.enableService('selection', true);
-    }
-
-    if (this.diagram.enableFollowHyperlinks) {
-      this.enableService('links', true);
-    }
-
-    if (this.diagram.enableHover) {
-      this.enableService('hover', true);
-    }
+    this.enableService('selection', this.diagram.enableSelection);
+    this.enableService('links', this.diagram.enableFollowHyperlinks);
+    this.enableService('hover', this.diagram.enableHover);
+    this.enableService('tooltip', this.diagram.enableTooltips);
   }
 
   public destroy() {
