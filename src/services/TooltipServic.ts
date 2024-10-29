@@ -31,10 +31,6 @@ export class TooltipService extends BasicService implements ITooltipService {
 
     const diagram = this.context.diagram;
 
-    if (!diagram.shapes || !diagram.enableTooltips) {
-      return;
-    }
-
     tippy.setDefaultProps({
       allowHTML: true,
       interactive: diagram.tooltipInteractive,
@@ -43,7 +39,7 @@ export class TooltipService extends BasicService implements ITooltipService {
       placement: diagram.tooltipPlacement,
       followCursor: diagram.tooltipUseMousePosition,
       appendTo: this.context.container,
-      plugins: diagram.tooltipUseMousePosition ? [followCursor] : undefined,
+      plugins: diagram.tooltipUseMousePosition ? [followCursor] : [],
     });
 
     for (const shapeId in diagram.shapes) {
